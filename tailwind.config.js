@@ -23,6 +23,13 @@ const defaultSerif = [
 ];
 
 module.exports = {
+  // mode: "jit",
+
+  // https://tailwindcss.com/docs/dark-mode
+  // For manual toggling of dark mode set this to class
+  darkMode: "class",
+
+  // list of files used to analyze for purgeing
   purge: {
     mode: "all",
     content: [
@@ -33,15 +40,12 @@ module.exports = {
       safelist: { deep: [/blur$/] },
     },
   },
-  darkMode: "class",
+
+  // Customizing our Tailwind CSS theme
   theme: {
     extend: {
-      colors: {
-        "neon-orange": "#f92300",
-      },
-      fontSize: {
-        "7xl": "4.5rem",
-      },
+      colors: {},
+      fontSize: {},
       spacing: {
         14: "3.375rem",
       },
@@ -119,7 +123,6 @@ module.exports = {
       body: ["Merriweather", ...defaultSerif],
     },
   },
-  variants: {},
   plugins: [require("@tailwindcss/typography")],
   variants: {
     extend: {

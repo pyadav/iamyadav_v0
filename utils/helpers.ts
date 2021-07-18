@@ -1,5 +1,4 @@
-import SiteConfig from "@config/seo.json";
+import seoConfiguration from "@config/seo.json";
 
-export function getSiteMetaData() {
-  return SiteConfig.siteMetadata;
-}
+export const getSiteMetaData = () => seoConfiguration.siteMetadata;
+export const EXTReplacer = (slug: string, ext: RegExp) => slug.replace(ext, "");

@@ -1,0 +1,56 @@
+---
+title: MDX bundler with Next.JS
+description: MDX is just an extension of Markdown that allows you to import and write JSX in your markdown documents.
+locale: en
+isPublished: true
+publishedAt: "2021-07-19"
+tags:
+  - nextjs
+  - terraform
+  - aws
+---
+
+## MDX, What the hack is this?
+
+MDX is just an extension of Markdown that allows you to import and write JSX in your markdown documents.
+
+### Definition of markdown
+
+As per John Gruber, the original creator of [Markdown](https://daringfireball.net/projects/markdown/):
+
+> Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML)
+
+Here's what Markdown looks like:
+
+```md
+Hello there! My name is **praveen yadav**.
+Here's my favorite programming language list:
+
+- Rust
+- Golang
+- Node.js
+```
+
+## Why we need MDX
+
+Markdown can be used for crating web pages, documents or any text that needs to be transformed into other formates like HTML. For web applications, Markdown needs to be transformed into HTML. But, Using Markdown you can only utilities only a handful of HTML elements.
+
+MDX takes the format a step further, and allows us to include our own elements, in the form of React components:
+
+```js
+import ProductList from '../components/ProductList';
+Here's an list of **Awesome projects**
+
+<ProductList
+  title="Awesome pojects"
+  data={[
+    { label: 'Rust', link: 'https://www.rust-lang.org/' },
+    { label: 'React', value: 'https://reactjs.org/' },
+    { label: 'Go', link: 'https://golang.org/' },
+  ]}
+/>
+```
+
+In order to display content in browser, you need to parse markdown file and compile it to HTML. On this blog, I am using [gray-matter](https://github.com/jonschlinkert/gray-matter) to parse my markdown files and [mdx-bundler](https://github.com/kentcdodds/mdx-bundler) to compile and bundle MDX files to eval in browser.
+
+mdx-bundler uses [esbuild](https://esbuild.github.io/), so it's VERY fast and supports TypeScript files (for the dependencies of your MDX files). It also uses [xdm](https://github.com/wooorm/xdm) which is a more modern and powerful MDX compiler with no extra runtime requirements

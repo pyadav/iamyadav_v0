@@ -1,17 +1,21 @@
 import clsx from "clsx";
+import Image from "next/image";
 import { getSiteMetaData } from "@utils/helpers";
 
-import profileImage from "../../content/assets/profile.png";
 export function Bio({ className }: any) {
   const { author, social } = getSiteMetaData();
 
   return (
     <div className={clsx(`flex items-center`, className)}>
-      <img
-        alt="Profile"
-        className="flex-shrink-0 mb-0 mr-3 rounded-full w-14 h-14"
-        src={profileImage.src}
-      />
+      <div className="flex-shrink-0 mb-0 mr-3 w-14 h-14">
+        <Image
+          className="rounded-full"
+          src="/profile.jpeg"
+          alt="Profile"
+          width={70}
+          height={70}
+        />
+      </div>
 
       <p className="text-base leading-7">
         Written by <b className="font-semibold">{author.name}</b>{" "}

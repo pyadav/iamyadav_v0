@@ -49,11 +49,11 @@ const LargeTitle = () => (
       <a
         className={clsx(
           "text-3xl font-black leading-none text-black no-underline font-display",
-          "sm:text-5xl",
-          "dark:text-white"
+          "sm:text-4xl",
+          "dark:text-white",
         )}
       >
-        Next.Js Starter Blog
+        Praveen Yadav&apos;s Blog
       </a>
     </Link>
   </h1>
@@ -65,10 +65,10 @@ const SmallTitle = () => (
       <a
         className={clsx(
           "text-2xl font-black text-black no-underline font-display",
-          "dark:text-white"
+          "dark:text-white",
         )}
       >
-        Next.Js Starter Blog
+        Praveen Yadav&apos;s Blog
       </a>
     </Link>
   </h1>
@@ -77,7 +77,7 @@ const SmallTitle = () => (
 export const Layout: React.FC<{}> = ({ children }) => {
   return (
     <div className="w-full min-h-screen dark:bg-gray-700 dark:text-white">
-      <div className="max-w-screen-sm px-4 py-12 mx-auto antialiased font-body">
+      <div className="max-w-screen-md px-4 py-12 mx-auto antialiased font-body">
         <Header />
         <main>{children}</main>
       </div>

@@ -1,84 +1,66 @@
 import matter from "gray-matter";
 import fs from "fs";
+import { paths, regexes } from "@utils/constants";
+import { getMdxBySlug } from "./mdx";
+import { EXTReplacer } from "./helpers";
 
 // Get day in format: Month day, Year. e.g. April 19, 2020
-function getFormattedDate(date: Date) {
+export function getFormattedDate(date: Date) {
   const options = { year: "numeric", month: "long", day: "numeric" } as const;
-  const formattedDate = date.toLocaleDateString("en-US", options);
+  const formattedDate = new Date(date).toLocaleDateString("en-US", options);
 
   return formattedDate;
 }
 
-export function getPostsFolders() {
-  // Get all posts folders located in `content/posts`
-  const postsFolders = fs
-    .readdirSync(`${process.cwd()}/content/posts`)
-    .map((folderName) => ({
-      directory: folderName,
-      filename: `${folderName}.md`,
-    }));
-
-  return postsFolders;
-}
-
-export const getPostItems = (filename: string, directory: string) => {
-  // Get raw content from file
-  const markdownWithMetadata = fs
-    .readFileSync(`content/posts/${directory}/${filename}`)
-    .toString();
-
-  // Parse markdown, get frontmatter data, excerpt and content.
-  const { data, excerpt, content } = matter(markdownWithMetadata);
-
-  const frontmatter = {
-    ...data,
-    date: getFormattedDate(data.date),
-  };
-
-  // Remove .md file extension from post name
-  const slug = filename.replace(".md", "");
-
-  return {
-    slug,
-    frontmatter,
-    excerpt,
-    content,
-  };
+export const dateSorter = (a: any, b: any) => {
+  return (
+    Number(new Date(b?.frontmatter?.createdAt as string)) -
+    Number(new Date(a?.frontmatter?.createdAt as string))
+  );
 };
 
-export const dateSorter = (a: any, b: any) =>
-  (new Date(b.frontmatter.date) as any) - (new Date(a.frontmatter.date) as any);
-export function getSortedPosts() {
-  const postFolders = getPostsFolders();
+const recursiveDirScanner = (dir: string, list: Array<string>) => {
+  const f = fs.readdirSync(dir, "utf-8");
+  return f.reduce((cache, file) => {
+    const filePath = `${dir}/${file}`;
 
-  const posts = postFolders
-    .map(({ filename, directory }) => getPostItems(filename, directory))
-    .sort(dateSorter);
+    if (fs.statSync(filePath).isDirectory()) {
+      cache = recursiveDirScanner(filePath, list);
+    } else {
+      cache.push(filePath);
+    }
+
+    return cache;
+  }, list);
+};
+
+const getPostSlugs = (regex: RegExp) => (filePath: string) => {
+  const [_, slug] = filePath.split(regex);
+  return slug;
+};
+
+export function getFileSlugs(path: string, regex: RegExp) {
+  const fileSlugs = recursiveDirScanner(path, [])
+    .map(getPostSlugs(regex))
+    // filter file with mdx extensions
+    .filter((ext) => regexes.mdx.test(ext));
+
+  return fileSlugs;
+}
+
+export const parsePosts = async (fileSlugs: Array<string>) => {
+  const posts = await Promise.all(
+    fileSlugs.map(
+      async (slug: string) =>
+        await getMdxBySlug(EXTReplacer(slug, regexes.mdx)),
+    ),
+  );
+  return posts;
+};
+
+export const getAllPosts = async () => {
+  const fileSlugs = getFileSlugs(paths.posts, regexes.contentPosts);
+  const posts = (await parsePosts(fileSlugs)).sort(dateSorter);
 
   return posts;
-}
-
-export function getPostsSlugs() {
-  const postFolders = getPostsFolders();
-
-  const paths = postFolders.map(({ filename }) => ({
-    params: {
-      slug: filename.replace(".md", ""),
-    },
-  }));
-
-  return paths;
-}
-
-export function getPostBySlug(slug: string) {
-  const posts = getSortedPosts();
-
-  const postIndex = posts.findIndex(({ slug: postSlug }) => postSlug === slug);
-
-  const { frontmatter, content, excerpt } = posts[postIndex];
-
-  const previousPost = posts[postIndex + 1];
-  const nextPost = posts[postIndex - 1];
-
-  return { frontmatter, post: { content, excerpt }, previousPost, nextPost };
-}
+};
