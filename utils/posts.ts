@@ -12,7 +12,7 @@ export function getFormattedDate(date: Date) {
   return formattedDate;
 }
 
-export const dateSorter = (a: any, b: any) => {
+export const sortByDate = (a: any, b: any) => {
   return (
     Number(new Date(b?.frontmatter?.createdAt as string)) -
     Number(new Date(a?.frontmatter?.createdAt as string))
@@ -60,7 +60,28 @@ export const parsePosts = async (fileSlugs: Array<string>) => {
 
 export const getAllPosts = async () => {
   const fileSlugs = getFileSlugs(paths.posts, regexes.contentPosts);
-  const posts = (await parsePosts(fileSlugs)).sort(dateSorter);
+  const posts = (await parsePosts(fileSlugs))
+    .sort(sortByDate)
+    .reduce(addsPaginationToPosts, []);
 
   return posts;
+};
+
+export const addsPaginationToPosts = (
+  acc: any,
+  current: any,
+  index: number,
+  posts: any[],
+) => {
+  acc.push({
+    ...current,
+    // If we are at the beginning of the iteration there is no "nextPost": set to null.
+    nextPost: acc.length === 0 ? null : posts[acc.length - 1].frontmatter.slug,
+    // If we are at the end of the list of posts there is no "previousPost": set to null.
+    previousPost:
+      posts.length === acc.length + 1
+        ? null
+        : posts[index + 1].frontmatter.slug,
+  });
+  return acc;
 };

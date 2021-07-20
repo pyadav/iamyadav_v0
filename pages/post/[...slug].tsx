@@ -6,7 +6,7 @@ import { GetStaticPaths, GetStaticProps } from "next";
 
 import { Layout, Bio, SEO } from "@components/index";
 import { paths, regexes } from "@utils/constants";
-import { getFileSlugs } from "@utils/posts";
+import { getFileSlugs, getAllPosts } from "@utils/posts";
 import { getMdxBySlug } from "@utils/mdx";
 
 import components from "@components/MDXPostComponents";
@@ -48,12 +48,18 @@ export default function PostPage({ code, frontmatter }: any) {
 
 export const getStaticProps: GetStaticProps = async ({ params }: any) => {
   try {
-    const data = await getMdxBySlug(params.slug.join("/"));
-    const { code, frontmatter } = data;
+    const post = await getMdxBySlug(params.slug.join("/"));
+    const posts = await getAllPosts();
+
     return {
       props: {
-        code,
-        frontmatter,
+        ...post,
+        nextPost:
+          posts.find((p: any) => p.nextPost === post.frontmatter.slug)
+            ?.frontmatter.slug || null,
+        previousPost:
+          posts.find((p: any) => p.previousPost === post.frontmatter.slug)
+            ?.frontmatter.slug || null,
       },
     };
   } catch (e) {

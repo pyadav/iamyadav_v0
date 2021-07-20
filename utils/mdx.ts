@@ -54,5 +54,7 @@ export const getMdxBySlug = async (filename: string) => {
       ...data,
       slug: filename,
     },
+    nextPost: null,
+    previousPost: null,
   };
 };
