@@ -3,6 +3,7 @@ import fs from "fs";
 import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
 import mdxPrism from "mdx-prism";
+import readingTime from "reading-time";
 import { ROOT, paths } from "@utils/constants";
 
 const getFileContent = (filename: string) => fs.readFileSync(filename, "utf8");
@@ -53,6 +54,7 @@ export const getMdxBySlug = async (filename: string) => {
     frontmatter: {
       ...data,
       slug: filename,
+      readingTime: readingTime(content),
     },
     nextPost: null,
     previousPost: null,
