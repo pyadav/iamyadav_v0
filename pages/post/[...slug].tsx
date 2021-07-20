@@ -1,6 +1,5 @@
 import React from "react";
 import NextImage from "next/image";
-
 import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 

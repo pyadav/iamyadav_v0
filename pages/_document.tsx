@@ -1,11 +1,5 @@
 import React from "react";
-import Document, {
-  Html,
-  Head,
-  Main,
-  NextScript,
-  DocumentContext,
-} from "next/document";
+import Document, { Html, Head, Main, NextScript } from "next/document";
 
 interface IDocumentProps {
   styleTags: React.ReactElement[];
@@ -17,7 +11,10 @@ export default class MyDocument extends Document<IDocumentProps> {
       <Html>
         <Head>
           <link rel="shortcut icon" href="/favicon.png" type="image/png" />
-
+          <link
+            href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css"
+            rel="stylesheet"
+          />
           <script
             async
             src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
