@@ -1,0 +1,356 @@
+---
+title: Error handling in Golang
+locale: en
+discription: Unlike other language, golang does explicit error checking. In golang, errors are values and we can transform any type into error by implementing the error interface which has a single Error() method.
+isPublished: true
+createdAt: "2021-07-29"
+updatedAt: "2021-07-29"
+tags:
+  - errors
+  - golang
+---
+
+Recently, I was working on a project which required to handle custom errors in golang. unlike other language, golang does explicit error checking.
+
+> An error is just a value that a function can return if something unexpected happened.
+
+In golang, **errors are values** which return errors as normal return value then we handle errors like **_if err != nil_** compare to other conventional **_try/catch_** method in another language.
+
+## Error in Golang
+
+```go
+type error interface {
+    Error() string
+}
+```
+
+In Go, The **error** built-in interface type is the conventional interface for representing an error condition, with the **nil** value representing no error.
+
+It has single **Error()** method which returns the error message as a string. By implementing this method, we can transform any type we define into an error of our own.
+
+```go
+package main
+
+import (
+	"io/ioutil"
+	"log"
+)
+
+func getFileContnent(filename string) ([]byte, error) {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	return content, nil
+}
+
+func main() {
+	content, err := getFileContnent("filename.txt")
+	if err != nil {
+		log.SetFlags(0)
+		log.Fatal(err)
+	}
+	log.Println(string(content))
+}
+
+```
+
+An idiomatic way to handle errors in Go is to return it as last return value of the function and check for the nil condition.
+
+## Creating errors in go
+
+> **error is an interface type**
+
+Golang provides two ways to create errors in standard library using **_errors.New_** and **_fmt.ErrorF_**.
+
+### errors.New
+
+```go
+errors.New("new error")
+```
+
+Go provides the built-in **errors** package which exports the **New** function. This function expects an error text message and returns an error.
+
+The returned error can be treated as a string by either accessing **err.Error()**, or using any of the **fmt** package functions. **Error()** method is automatically called by Golang when printing the error using methods like fmt.Println.
+
+```go
+var (
+	ErrNotFound1 = errors.New("not found")
+	ErrNotFound2 = errors.New("not found")
+)
+
+func main() {
+	fmt.Printf("is identical? : %t", ErrNotFound1 == ErrNotFound2)
+}
+
+// Output:
+// is identical? : false
+```
+
+Each call to New returns a distinct error value even if the text is identical.
+
+```go
+func New(text string) error {
+	return &errorString{text}
+}
+
+type errorString struct {
+	s string
+}
+
+func (e *errorString) Error() string {
+	return e.s
+}
+
+```
+
+Internally, **errors.New** creates and returns a pointer to [errors.errorString](https://github.com/golang/go/blob/2ebe77a2fda1ee9ff6fd9a3e08933ad1ebaea039/src/errors/errors.go#L63) struct invoked with the string passed which implements the **error** interface.
+
+### fmt.ErrorF
+
+```go
+number := 100
+zero := 0
+fmt.Errorf("math: %d cannot be divided by %d", number, zero)
+```
+
+fmt.Errorf provides ability to format your error message using format specifier and returns the string as a
+value that satisfies error interface.
+
+## Creating custom errors with data in go
+
+As mensioned above, error is an interface type.
+
+Hence, you can create your own error type by implementing the **Error()** function defined in the error interface on your struct.
+
+So, let’s create our first custom error by implementing error interface.
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+type MyError struct {
+	Code int
+	Msg  string
+}
+
+func (m *MyError) Error() string {
+	return fmt.Sprintf("%s: %d", m.Msg, m.Code)
+}
+
+func sayHello(name string) (string, error) {
+	if name == "" {
+		return "", &MyError{Code: 2002, Msg: "no name passed"}
+	}
+	return fmt.Sprintf("Hello, %s", name), nil
+}
+
+func main() {
+	s, err := sayHello("")
+	if err != nil {
+		log.SetFlags(0)
+		log.Fatal("unexpected error is ", err)
+	}
+	fmt.Println(s)
+}
+```
+
+You’ll see the following output:
+
+```shell
+unexpected error is no name passed: 2002
+exit status 1
+```
+
+In above example, you are creating a custom error using a struct type **MyError** by implementing **Error() function** of error interface.
+
+## Error wrapping
+
+Golang also allows errors to wrap other errors which is useful when you want to provide additional context to your error messages like providing specific information or more details about the error location in your code.
+
+You can create wrapped errors either with **fmt.Errorf** or by implementing a custom type. A simple way to create wrapped errors is to call **fmt.Errorf** with our error which we want to wrap using the **%w verb**
+
+```go
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+)
+
+func getFileContnent(filename string) ([]byte, error) {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("error reading file %s: %w", filename, err)
+	}
+	return content, nil
+}
+
+func main() {
+	content, err := getFileContnent("filename.txt")
+	if err != nil {
+		log.SetFlags(0)
+		log.Fatal(err)
+	}
+	log.Println(string(content))
+}
+
+```
+
+You’ll see the following output:
+
+```shell
+error reading file filename.txt: open filename.txt: no such file or directory
+exit status 1
+```
+
+## Examining errors with Is and As
+
+### errors.Is
+
+Unwrap, Is and As functions work on errors that may wrap other errors. An error wraps another error if its type has the method **Unwrap()** which returns a a non-nil error.
+
+**errors.Is** unwraps its first argument sequentially looking for an error that matches the second and returns boolean true if it finds one.
+simple equality checks:
+
+```go
+if errors.Is(err, ErrNoNamePassed)
+```
+
+is preferable to
+
+```go
+if err == ErrNoNamePassed
+```
+
+because the former will succeed if err wraps ErrNoNamePassed.
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"log"
+)
+
+type MyError struct {
+	Code int
+	Msg  string
+}
+
+func (m *MyError) Error() string {
+	return fmt.Sprintf("%s: %d", m.Msg, m.Code)
+}
+
+func main() {
+	e1 := &MyError{Code: 501, Msg: "new error"}
+
+	// wrapping e1 with e2
+	e2 := fmt.Errorf("E2: %w", e1)
+	// wrapping e2 with e3
+	e3 := fmt.Errorf("E3: %w", e2)
+
+	fmt.Println(e1) // prints "new error: 501"
+	fmt.Println(e2) // prints "E2: new error: 501"
+	fmt.Println(e3) // prints "E3: E2: new error: 501"
+
+
+	fmt.Println(errors.Unwrap(e1)) // prints <nil>
+	fmt.Println(errors.Unwrap(e2)) // prints "new error: 501"
+	fmt.Println(errors.Unwrap(e3)) // prints E2: new error: 501
+
+	// errors.Is function compares an error to a value.
+	if errors.Is(e3, e1) {
+		log.SetFlags(0)
+		log.Fatal(e3)
+	}
+}
+```
+
+We’ll see the following output:
+
+```shell
+new error: 501
+E2: new error: 501
+E3: E2: new error: 501
+<nil>
+new error: 501
+E2: new error: 501
+E3: E2: new error: 501
+exit status 1
+```
+
+### errors.As
+
+**errors.As** unwraps its first argument sequentially looking for an error that can be assigned to its second argument, which must be a pointer. If it succeeds, it performs the assignment and returns true. Otherwise, it returns false.
+
+```go
+var e *MyError
+if errors.As(err, &e) {
+	fmt.Println(e.code)
+}
+```
+
+is preferable to
+
+```go
+if e, ok := err.(*MyError); ok {
+	fmt.Println(e)
+}
+```
+
+because the former will succeed if err wraps an **\*MyError**
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"log"
+)
+
+type MyError struct {
+	Code int
+	Msg  string
+}
+
+func (m *MyError) Error() string {
+	return fmt.Sprintf("%s: %d", m.Msg, m.Code)
+}
+
+func main() {
+	e1 := &MyError{Code: 501, Msg: "new error"}
+	e2 := fmt.Errorf("E2: %w", e1)
+
+	// errors.As function tests whether an error is a specific type.
+	var e *MyError
+	if errors.As(e2, &e) {
+		log.SetFlags(0)
+		log.Fatal(e2)
+	}
+}
+```
+
+We’ll see the following output:
+
+```shell
+E2: new error: 501
+exit status 1
+```
+
+## Reference
+
+1. Standard library error package [https://golang.org/pkg/errors/](https://golang.org/pkg/errors/)
+2. The Go Blog - [Working with Errors in Go 1.13](https://blog.golang.org/go1.13-errors)
+3. [Error handling in Golang](https://gabrieltanner.org/blog/golang-error-handling-definitive-guide)
+
+## Conclusion
+
+I hope this article will help you to understand the basic of error handling in Go. If you have any questions or suggestions, feel free to contact me at [@osfreak](https://twitter.com/osfreak).

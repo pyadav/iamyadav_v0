@@ -7,7 +7,7 @@ import readingTime from "reading-time";
 import { ROOT, paths } from "@utils/constants";
 
 function firstFourLines(file: any, options: any) {
-  file.excerpt = file.content.split("\n").slice(0, 3).join(" ");
+  file.excerpt = file.content.substring(0, 120) + "...";
 }
 const getFileContent = (filename: string) => fs.readFileSync(filename, "utf8");
 const parseFileContent = (source: string) =>

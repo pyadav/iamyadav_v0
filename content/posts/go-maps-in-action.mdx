@@ -1,0 +1,57 @@
+---
+title: working with golang maps
+description: A map is a unordered collection of key/value pairs, named as hash tables, dictionaries, or associative arrays. These hashed tables provide a fast lookups...
+locale: en
+isPublished: false
+createdAt: "2021-07-19"
+updatedAt: "2021-07-19"
+tags:
+  - hash table
+  - golang
+---
+
+A map is a unordered collection of key/value pairs, named as hash tables, dictionaries, or associative arrays. These hashed tables provide a fast lookups, and easy insertion and deletion of values.
+
+### Declaration and initialisation
+
+In a go map like this
+
+```go
+var m map[KeyType]ValueType
+```
+
+where KeyType should be type of compairable. In golang Slice, map, and function values are not comparable.
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+
+    // Declare a map with nil value
+    var languages map[string]string
+    // allocates and initializes a hash map data structure
+    languages = make(map[string]string)
+
+    languages["en"] = "English"
+    languages["es"] = "Spanish"
+    languages["de"] = "German"
+
+    fmt.Println(languages)
+    fmt.Printf("%q", languages)
+}
+```
+
+This variable languages is a map of string keys to string values:
+
+```go
+var languages map[string]string
+```
+
+Map types are reference types, like pointers and slices. Here `languages` is a reference to a map and value is nil. A nil map is a special case of an empty map. Writing to a nil map will cause a runtime panic.
+To initalize a map, you can use the `make` function. It allocates and initializes a hash map data structure and returns a map value.
+
+```go
+languages = make(map[string]string)
+```
