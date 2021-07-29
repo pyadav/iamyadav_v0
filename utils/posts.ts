@@ -1,4 +1,3 @@
-import matter from "gray-matter";
 import fs from "fs";
 import { paths, regexes } from "@utils/constants";
 import { getMdxBySlug } from "./mdx";
@@ -19,6 +18,7 @@ export const sortByDate = (a: any, b: any) => {
   );
 };
 
+export const isPublished = (post: any) => post?.frontmatter?.isPublished;
 const recursiveDirScanner = (dir: string, list: Array<string>) => {
   const f = fs.readdirSync(dir, "utf-8");
   return f.reduce((cache, file) => {
@@ -62,6 +62,7 @@ export const getAllPosts = async () => {
   const fileSlugs = getFileSlugs(paths.posts, regexes.contentPosts);
   const posts = (await parsePosts(fileSlugs))
     .sort(sortByDate)
+    .filter(isPublished)
     .reduce(addsPaginationToPosts, []);
 
   return posts;

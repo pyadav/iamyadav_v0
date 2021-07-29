@@ -23,7 +23,7 @@ export default function PostPage({ code, frontmatter }: any) {
             {frontmatter.title}
           </h1>
           <p className="text-sm">{frontmatter.date}</p>
-          <div className="mt-10 overflow-hidden rounded-2xl text-[0px]">
+          {/* <div className="mt-10 overflow-hidden rounded-2xl text-[0px]">
             <NextImage
               src={"/assets/mdx.png"}
               width={1920}
@@ -31,7 +31,7 @@ export default function PostPage({ code, frontmatter }: any) {
               placeholder="blur"
               blurDataURL={"/assets/mdx.png"}
             />
-          </div>
+          </div> */}
         </header>
         <div className="mb-4 prose dark:prose-dark">
           <MDXComponent components={components} />

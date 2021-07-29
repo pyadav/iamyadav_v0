@@ -3,13 +3,14 @@
     "title": "iamyadav.ocm",
     "author": {
       "name": "Praveen Yadav",
-      "summary": "who works building clean user interfaces with React."
+      "summary": ""
     },
     "description": "A blog created with Next.js and Tailwind.css",
     "siteUrl": "iamyadav.com",
     "language": "en-US",
     "social": {
-      "twitter": "osfreak"
+      "twitter": "osfreak",
+      "github": "pyadav"
     }
   }
 }

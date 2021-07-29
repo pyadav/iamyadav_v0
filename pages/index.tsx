@@ -14,12 +14,12 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
       <SEO title="Praveen Yadav" />
       <Bio className="my-14" />
       {posts.map(
-        ({ frontmatter: { title, description, createdAt, slug } }: any) => (
+        ({ frontmatter: { title, createdAt, slug, excerpt } }: any) => (
           <article key={slug}>
             <header className="mb-2">
               <h3 className="mb-2">
                 <Link href={"/post/[...slug]"} as={`/post/${slug}`}>
-                  <a className="text-3xl font-bold text-yellow-600 font-display">
+                  <a className="text-3xl font-bold text-purple-700 dark:text-pink-700 font-display">
                     {title}
                   </a>
                 </Link>
@@ -27,7 +27,7 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
               <span className="text-sm">{createdAt}</span>
             </header>
             <section>
-              <p className="mb-8">{description}</p>
+              <p className="mb-8">{excerpt}</p>
             </section>
           </article>
         ),
