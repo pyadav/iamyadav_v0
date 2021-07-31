@@ -34,6 +34,12 @@ const components = {
       </NextLink>
     );
   },
+  h2: ({ ...props }) => {
+    return <h2 {...props} data-toc />;
+  },
+  h3: ({ ...props }) => {
+    return <h3 {...props} data-toc />;
+  },
 };
 
 export default components;

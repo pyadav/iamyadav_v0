@@ -1,49 +1,74 @@
 import React from "react";
-import NextImage from "next/image";
 import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 
 import { Layout, Bio, SEO } from "@components/index";
+import clsx from "clsx";
 import { paths, regexes } from "@utils/constants";
 import { getFileSlugs, getAllPosts } from "@utils/posts";
 import { getMdxBySlug } from "@utils/mdx";
 
 import components from "@components/MDXComponents";
+import { TOC } from "@components/TOC";
+import { Post } from "types/post";
 
-export default function PostPage({ code, frontmatter }: any) {
+export default function PostPage({ code, frontmatter }: Post) {
   const MDXComponent = React.useMemo(() => getMDXComponent(code), [code]);
 
+  const description = frontmatter.description || frontmatter.excerpt;
   return (
     <Layout>
       <SEO
+        blog
         title={frontmatter.title}
-        description={frontmatter.description || frontmatter.excerpt}
+        description={description}
+        ogImage={frontmatter.seoImage}
       />
-
-      <article>
-        <header className="mb-8">
-          <h1 className="mb-2 text-4xl font-black leading-none font-display">
+      <div
+        className={clsx("relative flex justify-between mt-12 mb-12", {
+          "xl:flex-row-reverse": Boolean(frontmatter.toc),
+          "xl:-mr-60": Boolean(frontmatter.toc),
+        })}
+      >
+        {frontmatter.toc && (
+          <aside className="sticky hidden h-screen max-w-sm mt-8 ml-8 top-16 xl:block">
+            <TOC />
+          </aside>
+        )}
+        <article className="max-w-3xl min-w-0 text-base lg:text-lg text-fore-subtle">
+          {/* <div className="mb-2 text-sm tracking-normal text-fore-subtle">
+            <span>
+              <time dateTime={publishedAt.toISOString()}>
+                {format(publishedAt, "MMMM dd yyyy")}
+              </time>
+            </span>
+            <span> • </span>
+            <span>{frontmatter.readingTime.text}</span>
+            {updatedAt && (
+              <Fragment>
+                <span> • </span>
+                <span className="italic">
+                  Last updated:{" "}
+                  <time dateTime={updatedAt.toISOString()}>
+                    {format(updatedAt, "MMMM dd yyyy")}
+                  </time>
+                </span>
+              </Fragment>
+            )}
+          </div> */}
+          <h1 className="mb-10 text-4xl font-black leading-none lg:text-5xl font-display">
             {frontmatter.title}
           </h1>
-          <p className="text-sm">{frontmatter.date}</p>
-          {/* <div className="mt-10 overflow-hidden rounded-2xl text-[0px]">
-            <NextImage
-              src={"/assets/mdx.png"}
-              width={1920}
-              height={900}
-              placeholder="blur"
-              blurDataURL={"/assets/mdx.png"}
-            />
-          </div> */}
-        </header>
-        <div className="mb-4 prose dark:prose-dark">
-          <MDXComponent components={components} />
-        </div>
-        <hr className="mt-4" />
-        <footer>
-          <Bio className="mt-8 mb-16" />
-        </footer>
-      </article>
+          <div className="max-w-3xl mb-4 prose dark:prose-dark">
+            <MDXComponent components={components} />
+          </div>
+
+          <hr className="mt-4" />
+          <footer>
+            <Bio className="mt-8 mb-16" />
+          </footer>
+        </article>
+      </div>
     </Layout>
   );
 }

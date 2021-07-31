@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { getSiteMetaData } from "@utils/helpers";
+import Blob from "@components/Blob";
 
 export function Bio({ className }: any) {
   const { author, social } = getSiteMetaData();
@@ -9,11 +10,13 @@ export function Bio({ className }: any) {
     <div className={clsx(`flex items-center`, className)}>
       <div className="flex-shrink-0 mb-0 mr-3 w-14 h-14">
         <Image
+          alt="my avatar"
           className="rounded-full"
           src="/static/profile.jpeg"
-          alt="Profile"
           width={70}
           height={70}
+          quality={100}
+          priority={true}
         />
       </div>
 

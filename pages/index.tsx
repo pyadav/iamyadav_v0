@@ -3,9 +3,10 @@ import Link from "next/link";
 
 import { Layout, Bio, SEO } from "@components/index";
 import { getAllPosts } from "@utils/posts";
+import { Post } from "types/post";
 
 type Props = {
-  posts: any;
+  posts: Post[];
 };
 
 const Home: React.FC<Props> = ({ posts }: Props) => {
@@ -15,8 +16,8 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
       <Bio className="my-14" />
       {posts.map(
         ({
-          frontmatter: { title, createdAt, slug, discription, excerpt },
-        }: any) => (
+          frontmatter: { title, publishedAt, slug, description, excerpt },
+        }: Post) => (
           <article key={slug}>
             <header className="mb-2">
               <h3 className="mb-2">
@@ -26,10 +27,10 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
                   </a>
                 </Link>
               </h3>
-              <span className="text-sm">{createdAt}</span>
+              <span className="text-sm">{publishedAt}</span>
             </header>
             <section>
-              <p className="mb-8">{discription || excerpt}</p>
+              <p className="mb-8">{description || excerpt}</p>
             </section>
           </article>
         ),

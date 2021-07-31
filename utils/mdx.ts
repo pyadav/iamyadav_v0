@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
 import rehypePrism from "@mapbox/rehype-prism";
 import readingTime from "reading-time";
-import gfm from "remark-gfm";
+import { Frontmatter, Post } from "types/post";
 
 import { ROOT, paths } from "@utils/constants";
 
@@ -59,9 +59,9 @@ const getCompiledMDX = async (content: string) => {
     throw new Error(error);
   }
 };
-export const getMdxBySlug = async (filename: string) => {
+export const getMdxBySlug = async (filename: string): Promise<Post> => {
   const source = getFileContent(`${paths.posts}/${filename}.mdx`);
-  const { content, data, excerpt } = parseFileContent(source);
+  const { content, data, excerpt } = parseFileContent(source) as any;
 
   const { code } = await getCompiledMDX(content);
 
@@ -72,7 +72,7 @@ export const getMdxBySlug = async (filename: string) => {
       excerpt,
       slug: filename,
       readingTime: readingTime(content),
-    },
+    } as Frontmatter,
     nextPost: null,
     previousPost: null,
   };

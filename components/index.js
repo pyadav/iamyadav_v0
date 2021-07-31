@@ -1,3 +1,3 @@
 export * from "./Bio";
 export * from "./Layout";
-export * from "./Seo";
+export * from "./SEO";

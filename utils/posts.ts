@@ -2,6 +2,7 @@ import fs from "fs";
 import { paths, regexes } from "@utils/constants";
 import { getMdxBySlug } from "./mdx";
 import { EXTReplacer } from "./helpers";
+import { Frontmatter, Post } from "types/post";
 
 // Get day in format: Month day, Year. e.g. April 19, 2020
 export function getFormattedDate(date: Date) {
@@ -11,14 +12,14 @@ export function getFormattedDate(date: Date) {
   return formattedDate;
 }
 
-export const sortByDate = (a: any, b: any) => {
+export const sortByDate = (a: Post, b: Post) => {
   return (
-    Number(new Date(b?.frontmatter?.createdAt as string)) -
-    Number(new Date(a?.frontmatter?.createdAt as string))
+    Number(new Date(b?.frontmatter?.publishedAt as string)) -
+    Number(new Date(a?.frontmatter?.publishedAt as string))
   );
 };
 
-export const isPublished = (post: any) => post?.frontmatter?.isPublished;
+export const isPublished = (post: Post) => post?.frontmatter?.isPublished;
 const recursiveDirScanner = (dir: string, list: Array<string>) => {
   const f = fs.readdirSync(dir, "utf-8");
   return f.reduce((cache, file) => {
@@ -34,12 +35,14 @@ const recursiveDirScanner = (dir: string, list: Array<string>) => {
   }, list);
 };
 
-const getPostSlugs = (regex: RegExp) => (filePath: string) => {
-  const [_, slug] = filePath.split(regex);
-  return slug;
-};
+const getPostSlugs =
+  (regex: RegExp) =>
+  (filePath: string): string => {
+    const [_, slug] = filePath.split(regex);
+    return slug;
+  };
 
-export function getFileSlugs(path: string, regex: RegExp) {
+export function getFileSlugs(path: string, regex: RegExp): string[] {
   const fileSlugs = recursiveDirScanner(path, [])
     .map(getPostSlugs(regex))
     // filter file with mdx extensions
@@ -48,7 +51,7 @@ export function getFileSlugs(path: string, regex: RegExp) {
   return fileSlugs;
 }
 
-export const parsePosts = async (fileSlugs: Array<string>) => {
+export const parsePosts = async (fileSlugs: Array<string>): Promise<Post[]> => {
   const posts = await Promise.all(
     fileSlugs.map(
       async (slug: string) =>
@@ -58,11 +61,11 @@ export const parsePosts = async (fileSlugs: Array<string>) => {
   return posts;
 };
 
-export const getAllPosts = async () => {
+export const getAllPosts = async (): Promise<Post[]> => {
   const fileSlugs = getFileSlugs(paths.posts, regexes.contentPosts);
   const posts = (await parsePosts(fileSlugs))
-    .sort(sortByDate)
     .filter(isPublished)
+    .sort(sortByDate)
     .reduce(addsPaginationToPosts, []);
 
   return posts;
@@ -72,8 +75,8 @@ export const addsPaginationToPosts = (
   acc: any,
   current: any,
   index: number,
-  posts: any[],
-) => {
+  posts: Post[],
+): Post[] => {
   acc.push({
     ...current,
     // If we are at the beginning of the iteration there is no "nextPost": set to null.

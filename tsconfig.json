@@ -22,6 +22,7 @@
       "@utils/*": ["utils/*"],
       "@assets/*": ["assets/*"],
       "@config/*": ["config/*"],
+      "@hooks/*": ["hooks/*"],
       "@styles/*": ["styles/*"]
     }
   },
