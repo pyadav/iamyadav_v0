@@ -1,8 +1,10 @@
 import React from "react";
 import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
+import Image from "next/image";
 
-import { Layout, Bio, SEO } from "@components/index";
+import { Layout, Bio } from "@components/index";
+import { SEO } from "@components/SEO";
 import clsx from "clsx";
 import { paths, regexes } from "@utils/constants";
 import { getFileSlugs, getAllPosts } from "@utils/posts";
@@ -27,7 +29,7 @@ export default function PostPage({ code, frontmatter }: Post) {
       <div
         className={clsx("relative flex justify-between mt-12 mb-12", {
           "xl:flex-row-reverse": Boolean(frontmatter.toc),
-          "xl:-mr-60": Boolean(frontmatter.toc),
+          "xl:-mr-80": Boolean(frontmatter.toc),
         })}
       >
         {frontmatter.toc && (
@@ -36,29 +38,36 @@ export default function PostPage({ code, frontmatter }: Post) {
           </aside>
         )}
         <article className="max-w-3xl min-w-0 text-base lg:text-lg text-fore-subtle">
-          {/* <div className="mb-2 text-sm tracking-normal text-fore-subtle">
-            <span>
-              <time dateTime={publishedAt.toISOString()}>
-                {format(publishedAt, "MMMM dd yyyy")}
-              </time>
-            </span>
-            <span> • </span>
-            <span>{frontmatter.readingTime.text}</span>
-            {updatedAt && (
-              <Fragment>
-                <span> • </span>
-                <span className="italic">
-                  Last updated:{" "}
-                  <time dateTime={updatedAt.toISOString()}>
-                    {format(updatedAt, "MMMM dd yyyy")}
-                  </time>
-                </span>
-              </Fragment>
+          <header className="mb-8">
+            <h1 className="mb-2 text-4xl font-black leading-none lg:text-5xl font-display">
+              {frontmatter.title}
+            </h1>
+            <div className="mb-10 text-sm tracking-normal text-fore-subtle">
+              <time>{frontmatter.publishedAt}</time>
+              <span> • </span>
+              <span className="font-bold">{frontmatter.readingTime?.text}</span>
+              {frontmatter.updatedAt && (
+                <>
+                  <span> • </span>
+                  <span className="italic">
+                    Last updated: <time>{frontmatter.updatedAt}</time>
+                  </span>
+                </>
+              )}
+            </div>
+            {frontmatter.seoImage && (
+              <Image
+                alt="blog header"
+                src={frontmatter.seoImage}
+                width={1920}
+                height={900}
+                quality={100}
+                priority={true}
+                placeholder="blur"
+                blurDataURL={frontmatter.seoImage}
+              />
             )}
-          </div> */}
-          <h1 className="mb-10 text-4xl font-black leading-none lg:text-5xl font-display">
-            {frontmatter.title}
-          </h1>
+          </header>
           <div className="max-w-3xl mb-4 prose dark:prose-dark">
             <MDXComponent components={components} />
           </div>

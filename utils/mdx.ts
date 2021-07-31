@@ -3,6 +3,9 @@ import fs from "fs";
 import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
 import rehypePrism from "@mapbox/rehype-prism";
+import rehypeSlug from "rehype-slug";
+import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
+import rehypeHeadings from "rehype-autolink-headings";
 import readingTime from "reading-time";
 import { Frontmatter, Post } from "types/post";
 
@@ -35,8 +38,9 @@ const getCompiledMDX = async (content: string) => {
   const remarkPlugins = [require("remark-gfm"), require("remark-capitalize")];
   const rehypePlugins = [
     rehypePrism,
-    require("rehype-slug"),
-    require("rehype-autolink-headings"),
+    rehypeAccessibleEmojis,
+    rehypeSlug,
+    [rehypeHeadings, { behavior: "prepend" }],
   ];
 
   try {

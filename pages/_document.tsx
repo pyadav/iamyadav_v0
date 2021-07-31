@@ -10,7 +10,8 @@ export default class MyDocument extends Document<IDocumentProps> {
     return (
       <Html>
         <Head>
-          <link rel="shortcut icon" href="/favicon.png" type="image/png" />
+          <link rel="shortcut icon" href="/favicon.ico" type="image/png" />
+          <link rel="apple-touch-icon" href="/favicon.ico" />
           <link
             href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css"
             rel="stylesheet"

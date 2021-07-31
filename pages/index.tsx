@@ -1,7 +1,8 @@
 import { GetStaticProps } from "next";
 import Link from "next/link";
 
-import { Layout, Bio, SEO } from "@components/index";
+import { Layout, Bio } from "@components/index";
+import { SEO } from "@components/SEO";
 import { getAllPosts } from "@utils/posts";
 import { Post } from "types/post";
 
@@ -16,7 +17,15 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
       <Bio className="my-14" />
       {posts.map(
         ({
-          frontmatter: { title, publishedAt, slug, description, excerpt },
+          frontmatter: {
+            slug,
+            title,
+            description,
+            publishedAt,
+            updatedAt,
+            excerpt,
+            readingTime,
+          },
         }: Post) => (
           <article key={slug}>
             <header className="mb-2">
@@ -27,7 +36,11 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
                   </a>
                 </Link>
               </h3>
-              <span className="text-sm">{publishedAt}</span>
+              <div className="mb-4 text-sm tracking-normal text-fore-subtle">
+                <time>{publishedAt}</time>
+                <span> • </span>
+                <span className="font-bold">{readingTime?.text}</span>
+              </div>
             </header>
             <section>
               <p className="mb-8">{description || excerpt}</p>

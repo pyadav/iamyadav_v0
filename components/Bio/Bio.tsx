@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
 import { getSiteMetaData } from "@utils/helpers";
-import Blob from "@components/Blob";
 
 export function Bio({ className }: any) {
   const { author, social } = getSiteMetaData();
@@ -17,6 +16,8 @@ export function Bio({ className }: any) {
           height={70}
           quality={100}
           priority={true}
+          placeholder="blur"
+          blurDataURL="/static/profile.jpeg"
         />
       </div>
 

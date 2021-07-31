@@ -2,13 +2,14 @@ import Head from "next/head";
 
 import data from "@config/seo.json";
 
-type SEOProps = {
+interface SEOProps {
   title?: string;
   description?: string;
   blog?: boolean;
   ogImage?: string;
-};
-export function SEO({ title, description, blog, ogImage }: SEOProps) {
+}
+
+export const SEO = ({ title, description, blog, ogImage }: SEOProps) => {
   const {
     author,
     image,
@@ -57,12 +58,9 @@ export function SEO({ title, description, blog, ogImage }: SEOProps) {
       <meta property="twitter:image" content={seo.image} />
       <meta name="twitter:creator" content={social.twitter} />
 
-      <link rel="icon" type="image/png" href="/favicon.ico" />
-      <link rel="apple-touch-icon" href="/favicon.ico" />
-
       <script type="application/ld+json">
         {JSON.stringify(websiteSchema)}
       </script>
     </Head>
   );
-}
+};
