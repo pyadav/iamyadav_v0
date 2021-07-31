@@ -8,14 +8,17 @@ import { paths, regexes } from "@utils/constants";
 import { getFileSlugs, getAllPosts } from "@utils/posts";
 import { getMdxBySlug } from "@utils/mdx";
 
-import components from "@components/MDXPostComponents";
+import components from "@components/MDXComponents";
 
 export default function PostPage({ code, frontmatter }: any) {
   const MDXComponent = React.useMemo(() => getMDXComponent(code), [code]);
 
   return (
     <Layout>
-      <SEO title={frontmatter.title} description={frontmatter.description} />
+      <SEO
+        title={frontmatter.title}
+        description={frontmatter.description || frontmatter.excerpt}
+      />
 
       <article>
         <header className="mb-8">

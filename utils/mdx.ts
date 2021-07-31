@@ -2,8 +2,10 @@ import path from "path";
 import fs from "fs";
 import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
-import mdxPrism from "mdx-prism";
+import rehypePrism from "@mapbox/rehype-prism";
 import readingTime from "reading-time";
+import gfm from "remark-gfm";
+
 import { ROOT, paths } from "@utils/constants";
 
 function firstFourLines(file: any, options: any) {
@@ -30,16 +32,25 @@ const getCompiledMDX = async (content: string) => {
     );
   }
 
+  const remarkPlugins = [require("remark-gfm"), require("remark-capitalize")];
+  const rehypePlugins = [
+    rehypePrism,
+    require("rehype-slug"),
+    require("rehype-autolink-headings"),
+  ];
+
   try {
     return await bundleMDX(content, {
       xdmOptions(options) {
         // this is the recommended way to add custom remark/rehype plugins:
         options.remarkPlugins = [
           ...(options.remarkPlugins ?? []),
-          require("remark-capitalize"),
-          require("remark-autolink-headings"),
+          ...remarkPlugins,
         ];
-        options.rehypePlugins = [...(options.rehypePlugins ?? []), mdxPrism];
+        options.rehypePlugins = [
+          ...(options.rehypePlugins ?? []),
+          ...rehypePlugins,
+        ];
 
         return options;
       },

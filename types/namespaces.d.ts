@@ -8,6 +8,6 @@ declare module "*.bmp";
 declare module "*.ico";
 declare module "*.tiff";
 
-declare module "mdx-prism";
+declare module "@mapbox/rehype-prism";
 declare module "remark-capitalize";
 declare module "remark-containers";
