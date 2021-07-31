@@ -1,12 +1,10 @@
 {
   "siteMetadata": {
-    "title": "iamyadav.com",
-    "author": {
-      "name": "Praveen Yadav",
-      "summary": ""
-    },
-    "description": "A blog created with Next.js and Tailwind.css",
-    "siteUrl": "iamyadav.com",
+    "title": "Praveen Yadav",
+    "author": "Praveen Yadav",
+    "description": "Praveen Yadav is versatile javascript & golang developer",
+    "siteUrl": "https://iamyadav.com",
+    "image": "/static/profile.jpeg",
     "language": "en-US",
     "social": {
       "twitter": "osfreak",

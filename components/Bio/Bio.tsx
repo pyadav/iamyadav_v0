@@ -10,7 +10,7 @@ export function Bio({ className }: any) {
       <div className="flex-shrink-0 mb-0 mr-3 w-14 h-14">
         <Image
           className="rounded-full"
-          src="/profile.jpeg"
+          src="/static/profile.jpeg"
           alt="Profile"
           width={70}
           height={70}
@@ -18,8 +18,8 @@ export function Bio({ className }: any) {
       </div>
 
       <p className="text-base leading-7">
-        Written by <b className="font-semibold">{author.name}</b>{" "}
-        {author.summary} <br></br>
+        Written by <b className="font-semibold">{author}</b>
+        <br></br>
         Follow on
         <a href={`https://twitter.com/${social.twitter}`}> twitter</a>,
         <a href={`https://github.com/${social.github}`}> github</a>
