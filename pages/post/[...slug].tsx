@@ -1,4 +1,6 @@
 import React from "react";
+import { NextSeo } from "next-seo";
+
 import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
@@ -17,14 +19,34 @@ import { Post } from "types/post";
 export default function PostPage({ code, frontmatter }: Post) {
   const MDXComponent = React.useMemo(() => getMDXComponent(code), [code]);
 
-  const description = frontmatter.description || frontmatter.excerpt;
+  const seo = {
+    title: frontmatter.title,
+    ogImage: frontmatter.ogImage,
+    description: frontmatter.description || frontmatter.excerpt,
+    canonical: `https://iamyadav.com/post/${frontmatter.slug}`,
+  };
   return (
     <Layout>
       <SEO
         blog
-        title={frontmatter.title}
-        description={description}
-        ogImage={frontmatter.seoImage}
+        title={seo.title}
+        ogImage={seo.ogImage}
+        description={seo.description}
+      />
+      <NextSeo
+        canonical={seo.canonical}
+        openGraph={{
+          url: seo.canonical,
+          type: "article",
+          article: {
+            publishedTime: frontmatter.publishedAt,
+            authors: ["https://iamyadav.com"],
+            tags: frontmatter.tags,
+          },
+        }}
+        twitter={{
+          site: seo.canonical,
+        }}
       />
       <div
         className={clsx("relative flex justify-between mt-12 mb-12", {
@@ -55,16 +77,16 @@ export default function PostPage({ code, frontmatter }: Post) {
                 </>
               )}
             </div>
-            {frontmatter.seoImage && (
+            {frontmatter.ogImage && (
               <Image
                 alt="blog header"
-                src={frontmatter.seoImage}
+                src={frontmatter.ogImage}
                 width={1920}
                 height={900}
                 quality={100}
                 priority={true}
                 placeholder="blur"
-                blurDataURL={frontmatter.seoImage}
+                blurDataURL={frontmatter.ogImage}
               />
             )}
           </header>

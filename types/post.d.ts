@@ -14,7 +14,7 @@ export type Frontmatter = {
   updatedAt?: string;
   tags: string[];
   toc?: boolean;
-  seoImage?: string;
+  ogImage?: string;
   excerpt?: string;
   readingTime?: {
     text: string;

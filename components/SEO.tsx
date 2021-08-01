@@ -1,5 +1,5 @@
 import Head from "next/head";
-
+import { NextSeo } from "next-seo";
 import data from "@config/seo.json";
 
 interface SEOProps {
@@ -34,33 +34,42 @@ export const SEO = ({ title, description, blog, ogImage }: SEOProps) => {
   };
 
   return (
-    <Head>
-      <title>{seo.title}</title>
-      <meta charSet="utf-8" />
-      <meta name="description" content={seo.description} />
-      <meta name="image" content={seo.image} />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <>
+      <Head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
 
-      {/* Open Graph */}
-      <meta property="og:type" content="website" />
-      <meta property="og:image" content={seo.image} />
-      <meta property="og:site_name" content={seo.title} />
-      <meta name="og:title" property="og:title" content={title} />
-      <meta
-        name="og:description"
-        property="og:description"
-        content={seo.description}
+        <script type="application/ld+json">
+          {JSON.stringify(websiteSchema)}
+        </script>
+      </Head>
+
+      <NextSeo
+        title={seo.title}
+        description={seo.description}
+        openGraph={{
+          type: "website",
+          url: seo.url,
+          title: seo.title,
+          site_name: seo.title,
+          description: seo.description,
+        }}
+        twitter={{
+          handle: social.twitter,
+          site: seo.url,
+          cardType: "summary_large_image",
+        }}
+        additionalMetaTags={[
+          {
+            name: "image",
+            content: seo.image,
+          },
+          {
+            property: "og:image",
+            content: seo.image,
+          },
+        ]}
       />
-      {/* Twitter */}
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={seo.description} />
-      <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:image" content={seo.image} />
-      <meta name="twitter:creator" content={social.twitter} />
-
-      <script type="application/ld+json">
-        {JSON.stringify(websiteSchema)}
-      </script>
-    </Head>
+    </>
   );
 };
