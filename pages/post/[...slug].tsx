@@ -7,6 +7,7 @@ import Image from "next/image";
 
 import { Layout, Bio } from "@components/index";
 import { SEO } from "@components/SEO";
+import Comment from "@components/Comment";
 import clsx from "clsx";
 import { paths, regexes } from "@utils/constants";
 import { getFileSlugs, getAllPosts } from "@utils/posts";
@@ -90,9 +91,11 @@ export default function PostPage({ code, frontmatter }: Post) {
               />
             )}
           </header>
-          <div className="max-w-3xl mb-4 prose dark:prose-dark">
+          <div className="max-w-3xl mb-8 prose dark:prose-dark">
             <MDXComponent components={components} />
           </div>
+
+          <Comment />
 
           <hr className="mt-4" />
           <footer>
