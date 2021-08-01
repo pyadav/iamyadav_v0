@@ -14,7 +14,10 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
   return (
     <Layout>
       <SEO title="Praveen Yadav" />
-      <Bio className="my-14" />
+      <h1 className="mt-32 mb-32 text-4xl font-bold text-center text-gray-800 md:text-5xl md:leading-snug dark:text-white md:mt-20 md:mb-20">
+        Resources to help you <br />
+        make more versatile developer
+      </h1>
       {posts.map(
         ({
           frontmatter: {
@@ -31,7 +34,7 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
             <header className="mb-2">
               <h3 className="mb-2">
                 <Link href={"/post/[...slug]"} as={`/post/${slug}`}>
-                  <a className="text-3xl font-bold text-purple-700 dark:text-pink-700 font-display">
+                  <a className="text-3xl font-bold text-purple-700 dark:text-yellow-700 font-display">
                     {title}
                   </a>
                 </Link>

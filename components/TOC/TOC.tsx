@@ -35,10 +35,10 @@ export function TOC() {
             key={heading.id}
             href={`#${heading.id}`}
             className={clsx(
-              "block mt-3 text-sm hover:text-purple-700 dark:hover:text-pink-700 focus-visible:outline-accent",
+              "block mt-3 text-sm hover:text-purple-700 dark:hover:text-yellow-700 focus-visible:outline-accent",
               {
                 "text-purple-700": heading.id === activeNode,
-                "dark:text-pink-700": heading.id === activeNode,
+                "dark:text-yellow-700": heading.id === activeNode,
                 "ml-3": getLevel(heading.nodeName) === 3,
               },
             )}

@@ -23,14 +23,9 @@ const Header = () => {
   const isDarkMode = resolvedTheme === "dark";
 
   return (
-    <header
-      className={clsx("flex items-center justify-between ", {
-        "mb-8": isRoot,
-        "mb-2": !isRoot,
-      })}
-    >
+    <header className={clsx("flex items-center justify-between ")}>
       <div className={"max-w-md"}>
-        {isRoot ? <LargeTitle /> : <SmallTitle />}
+        <SmallTitle />
       </div>
       {mounted && (
         <DarkModeToggle
@@ -64,7 +59,7 @@ const SmallTitle = () => (
     <Link href="/">
       <a
         className={clsx(
-          "text-2xl font-black text-black no-underline font-display",
+          "text-xl font-black text-black no-underline font-display",
           "dark:text-white",
         )}
       >
