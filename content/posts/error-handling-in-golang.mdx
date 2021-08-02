@@ -56,7 +56,7 @@ func main() {
 
 ```
 
-An idiomatic way to handle errors in Go is to return it as last return value of the function and check for the nil condition.
+An [idiomatic](https://en.wikipedia.org/wiki/Programming_idiom) way to handle errors in Go is to return it as last return value of the function and check for the nil condition.
 
 ## Creating errors in go
 
@@ -88,7 +88,7 @@ func main() {
 // is identical? : false
 ```
 
-Each call to New returns a distinct error value even if the text is identical.
+Each call to New, returns a distinct error value even if the text is identical.
 
 ```go
 func New(text string) error {
@@ -354,4 +354,6 @@ exit status 1
 
 ## Conclusion
 
-I hope this article will help you to understand the basic of error handling in Go. If you have any questions or suggestions, feel free to contact me at [@osfreak](https://twitter.com/osfreak).
+I hope this article will help you to understand the basic of error handling in Go.
+
+If you have found this useful, please consider recommending and sharing it with other fellow developers and if you have any questions or suggestions, feel free to add a comment or contact me on [twitter](https://twitter.com/osfreak).
