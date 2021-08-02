@@ -52,7 +52,7 @@ export default function PostPage({ code, frontmatter }: Post) {
       <div
         className={clsx("relative flex justify-between mt-12 mb-12", {
           "xl:flex-row-reverse": Boolean(frontmatter.toc),
-          "xl:-mr-80": Boolean(frontmatter.toc),
+          "xl:-mr-48": Boolean(frontmatter.toc),
         })}
       >
         {frontmatter.toc && (
