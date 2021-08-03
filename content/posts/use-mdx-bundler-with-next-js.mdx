@@ -2,18 +2,23 @@
 title: MDX bundler with Next.JS
 description: MDX is just an extension of Markdown that allows you to import and write JSX in your markdown documents.
 locale: en
-publishedAt: "2021-07-19"
-updatedAt: "2021-07-19"
+isPublished: true
+publishedAt: "2021-08-03"
+updatedAt: "2021-08-03"
+ogImage: "/assets/use-mdx-bundler-with-next-js.png"
+toc: true
 tags:
   - markdown
   - nextjs
 ---
 
-MDX is just an extension of Markdown that allows you to import and write JSX in your markdown documents.
+For my personal blog, I have to choose a MDX file in order to display rich content or embed custom react components in markdown. Before going further how to use **MDX with Next.JS**, I would like to explain why I select MDX and [mdx-bundler](https://github.com/kentcdodds/mdx-bundler) to compile my markdown files.
 
-### Definition of markdown
+The source code for this tutorial can be found on [GitHub](https://github.com/pyadav/use-mdx-bundler-with-next-js).
 
-As per John Gruber, the original creator of [Markdown](https://daringfireball.net/projects/markdown/):
+## Definition of markdown
+
+As per **John Gruber**, the original creator of [Markdown](https://daringfireball.net/projects/markdown/):
 
 > Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML)
 
@@ -30,16 +35,18 @@ Here's my favorite programming language list:
 
 ## Why we need MDX
 
-Markdown can be used for crating web pages, documents or any text that needs to be transformed into other formates like HTML. For web applications, Markdown needs to be transformed into HTML. But, Using Markdown you can only utilities only a handful of HTML elements.
+MDX is just an extension of Markdown that allows you to import and write JSX in your markdown documents.
 
-MDX takes the format a step further, and allows us to include our own elements, in the form of React components:
+Markdown can be used for creating web pages, documents or any text that needs to be transformed into other formats like For web applications, Markdown needs to be transformed into HTML. But, Using Markdown you can only use a handful of HTML elements.
+
+MDX takes the format a step further, and allows us to include our own custom elements, in the form of React components:
 
 ```js
 import ProductList from '../components/ProductList';
 Here's an list of **Awesome projects**
 
 <ProductList
-  title="Awesome pojects"
+  title="Awesome projects"
   data={[
     { label: 'Rust', link: 'https://www.rust-lang.org/' },
     { label: 'React', value: 'https://reactjs.org/' },
@@ -48,6 +55,110 @@ Here's an list of **Awesome projects**
 />
 ```
 
-In order to display content in browser, you need to parse markdown file and compile it to HTML. On this blog, I am using [gray-matter](https://github.com/jonschlinkert/gray-matter) to parse my markdown files and [mdx-bundler](https://github.com/kentcdodds/mdx-bundler) to compile and bundle MDX files to eval in browser.
+In order to display content in the browser, you need to parse the markdown file and compile it to HTML. On this blog, I am using
 
-mdx-bundler uses [esbuild](https://esbuild.github.io/), so it's VERY fast and supports TypeScript files (for the dependencies of your MDX files). It also uses [xdm](https://github.com/wooorm/xdm) which is a more modern and powerful MDX compiler with no extra runtime requirements
+1. [gray-matter](https://github.com/jonschlinkert/gray-matter) to parse my markdown files and
+2. [mdx-bundler](https://github.com/kentcdodds/mdx-bundler) to compile MDX/TSX strings and give you back a component which you can render in the browser.
+
+**mdx-bundler** uses [esbuild](https://esbuild.github.io/), so it's VERY fast and supports TypeScript files (for the dependencies of your MDX files). It also uses [xdm](https://github.com/wooorm/xdm) which is a more modern and powerful MDX compiler with no extra runtime requirements
+
+## Benefits of mdx-bundler
+
+These are popular MDX compiler that are available on the market right now -
+
+1. Official MDX support by Next.js [Next.js + MDX](https://www.npmjs.com/package/@next/mdx)
+2. Hashicorp's [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote)
+3. Kent C Dodds's [mdx-bundler](https://github.com/kentcdodds/mdx-bundler)
+
+> If you have a lot of files that all import and use different components, you may benefit from using mdx-bundler, as [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) currently only allows components to be imported and made available across all pages.
+
+I decided to use [mdx-bundler](https://github.com/kentcdodds/mdx-bundler) because it has a very **good performance** and **great features** like
+
+1. **Components import within a mdx file**
+2. Frontmatter supports
+3. Ability to use frontmatter in mdx file
+4. Bundle image within a mdx file using [remark-mdx-images](https://www.npmjs.com/package/remark-mdx-images)
+
+Now you know why you pick mdx-bundler for your MDX contents, let's see how to use it with Next.JS.
+
+### bundleMDX
+
+Next.js support two form of [pre-rendering](https://nextjs.org/docs/basic-features/pages#pre-rendering): [Static Generation](https://nextjs.org/docs/basic-features/pages#static-generation-with-data) and [Server-side Rendering](https://nextjs.org/docs/basic-features/pages#server-side-rendering). Here, we are using Static Generation to generate HTML files at build time. We will be calling **_bundleMDX_** which takes MDX source as string to compile MDX files to HTML.
+
+```js
+const getCompiledMDX = async (content: string) => {
+  // Add your remark and rehype plugins here
+  const remarkPlugins = [];
+  const rehypePlugins = [];
+
+  try {
+    return await bundleMDX(content, {
+      xdmOptions(options) {
+        options.remarkPlugins = [
+          ...(options.remarkPlugins ?? []),
+          ...remarkPlugins,
+        ];
+        options.rehypePlugins = [
+          ...(options.rehypePlugins ?? []),
+          ...rehypePlugins,
+        ];
+
+        return options;
+      },
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+```
+
+#### Next.JS esbuild ENOENT Issue
+
+Sometime we get esbuild issue when it's not able to find executable path. _esbuild_ relies on \_\_dirname to find its executable file. In order to provide the correct path of esbuild executable, we need to provide point esbuild binary path directly in **_bundleMDX_** function.
+
+```js
+import path from "path";
+
+if (process.platform === "win32") {
+  process.env.ESBUILD_BINARY_PATH = path.join(
+    process.cwd(),
+    "node_modules",
+    "esbuild",
+    "esbuild.exe",
+  );
+} else {
+  process.env.ESBUILD_BINARY_PATH = path.join(
+    process.cwd(),
+    "node_modules",
+    "esbuild",
+    "bin",
+    "esbuild",
+  );
+}
+```
+
+### getMDXComponent
+
+MDX Bundler supplies **_getMDXComponent_** function to turn the string of compiled code into something you can mount.
+
+```JS
+import React, {useMemo} from 'react'
+import {getMDXComponent} from 'mdx-bundler/client'
+
+
+const Post = ({ code, frontmatter }) => {
+  const Component = useMemo(() => getMDXComponent(code), [code]);
+
+  return (
+    <div className={styles.container}>
+      <Component />
+    </div>
+  );
+};
+```
+
+## Conclusion
+
+I hope this article will help you to understand how to use MDX with Next.JS using mdx-bundler. You can see a working demo at [https://use-mdx-bundler-with-next-js](https://use-mdx-bundler-with-next-js-m7antg5rw-pyadav.vercel.app/) and view the code at [GitHub](https://github.com/pyadav/use-mdx-bundler-with-next-js).
+
+If you have found this useful, please consider recommending and sharing it with other fellow developers and if you have any questions or suggestions, feel free to add a comment or contact me on [twitter](https://twitter.com/osfreak).

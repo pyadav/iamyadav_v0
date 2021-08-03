@@ -35,7 +35,7 @@ const getCompiledMDX = async (content: string) => {
     );
   }
 
-  const remarkPlugins = [require("remark-gfm"), require("remark-capitalize")];
+  const remarkPlugins = [require("remark-gfm")];
   const rehypePlugins = [
     rehypePrism,
     rehypeAccessibleEmojis,
@@ -46,7 +46,6 @@ const getCompiledMDX = async (content: string) => {
   try {
     return await bundleMDX(content, {
       xdmOptions(options) {
-        // this is the recommended way to add custom remark/rehype plugins:
         options.remarkPlugins = [
           ...(options.remarkPlugins ?? []),
           ...remarkPlugins,
@@ -65,14 +64,13 @@ const getCompiledMDX = async (content: string) => {
 };
 export const getMdxBySlug = async (filename: string): Promise<Post> => {
   const source = getFileContent(`${paths.posts}/${filename}.mdx`);
-  const { content, data, excerpt } = parseFileContent(source) as any;
-
-  const { code } = await getCompiledMDX(content);
+  const { code, frontmatter } = await getCompiledMDX(source);
+  const { content, excerpt } = parseFileContent(source) as any;
 
   return {
     code,
     frontmatter: {
-      ...data,
+      ...frontmatter,
       excerpt,
       slug: filename,
       readingTime: readingTime(content),
