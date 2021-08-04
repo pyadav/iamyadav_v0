@@ -33,20 +33,46 @@ export const SEO = ({ title, description, blog, ogImage }: SEOProps) => {
     name: seo.title,
   };
 
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: author,
+    url: siteUrl,
+    jobTitle: "Product Engineer",
+    gender: "male",
+    sameAs: [
+      "https://www.linkedin.com/in/osfreak",
+      "https://github.com/pyadav",
+      "https://twitter.com/osfreak",
+      "https://dev.to/pyadav",
+      "https://osfreak.medium.com",
+    ],
+  };
+
   return (
     <>
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="RSS Feed for iamyadav.com"
+          href={`${siteUrl}/rss.xml`}
+        ></link>
 
         <script type="application/ld+json">
           {JSON.stringify(websiteSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(personSchema)}
         </script>
       </Head>
 
       <NextSeo
         title={seo.title}
         description={seo.description}
+        canonical={siteUrl}
         openGraph={{
           type: "website",
           url: seo.url,
@@ -63,6 +89,10 @@ export const SEO = ({ title, description, blog, ogImage }: SEOProps) => {
           {
             name: "image",
             content: seo.image,
+          },
+          {
+            name: "HandheldFriendly",
+            content: "true",
           },
           {
             property: "og:image",

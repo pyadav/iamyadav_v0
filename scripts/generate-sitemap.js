@@ -1,8 +1,11 @@
 const fs = require("fs");
+const chalk = require("chalk");
 const globby = require("globby");
 const prettier = require("prettier");
 
 (async () => {
+  console.info(chalk.cyan("info"), ` - Generating sitemap`);
+
   const prettierConfig = await prettier.resolveConfig("./.prettierrc");
   const pages = await globby([
     "pages/**/*.tsx",
@@ -47,4 +50,5 @@ const prettier = require("prettier");
 
   // eslint-disable-next-line no-sync
   fs.writeFileSync("public/sitemap.xml", formatted);
+  console.info(chalk.cyan("info"), ` - Generating sitemap done`);
 })();
