@@ -1,5 +1,5 @@
 import fs from "fs";
-import { paths, regexes } from "@utils/constants";
+import { paths, regexes } from "utils/constants";
 import { getMdxBySlug } from "./mdx";
 import { EXTReplacer } from "./helpers";
 import { Frontmatter, Post } from "types/post";

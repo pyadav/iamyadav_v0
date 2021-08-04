@@ -16,15 +16,7 @@
 
     "baseUrl": ".",
     /* Strict Type-Checking Options */
-    "typeRoots": ["types", "node_modules/@types"],
-    "paths": {
-      "@components/*": ["components/*"],
-      "@utils/*": ["utils/*"],
-      "@assets/*": ["assets/*"],
-      "@config/*": ["config/*"],
-      "@hooks/*": ["hooks/*"],
-      "@styles/*": ["styles/*"]
-    }
+    "typeRoots": ["types", "node_modules/@types"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

@@ -5,16 +5,17 @@ import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 
-import { Layout, Bio } from "@components/index";
-import { SEO } from "@components/SEO";
-import Comment from "@components/Comment";
 import clsx from "clsx";
-import { paths, regexes } from "@utils/constants";
-import { getFileSlugs, getAllPosts } from "@utils/posts";
-import { getMdxBySlug } from "@utils/mdx";
+import { paths, regexes } from "utils/constants";
+import { getFileSlugs, getAllPosts } from "utils/posts";
+import { getMdxBySlug } from "utils/mdx";
 
-import components from "@components/MDXComponents";
-import { TOC } from "@components/TOC";
+import { Layout } from "src/layout";
+import { Bio } from "src/components/Bio";
+import { Seo } from "src/components/Seo";
+import { Comment } from "src/components/Comment";
+import { Toc } from "src/components/Toc";
+import components from "src/components/MDX/MDX";
 import { Post } from "types/post";
 
 export default function PostPage({ code, frontmatter }: Post) {
@@ -28,7 +29,7 @@ export default function PostPage({ code, frontmatter }: Post) {
   };
   return (
     <Layout>
-      <SEO
+      <Seo
         blog
         title={seo.title}
         ogImage={seo.ogImage}
@@ -57,7 +58,7 @@ export default function PostPage({ code, frontmatter }: Post) {
       >
         {frontmatter.toc && (
           <aside className="sticky hidden h-screen max-w-sm mt-8 ml-8 top-16 xl:block">
-            <TOC />
+            <Toc />
           </aside>
         )}
         <article className="max-w-3xl min-w-0 text-base lg:text-lg text-fore-subtle">

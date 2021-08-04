@@ -32,10 +32,7 @@ module.exports = {
   // list of files used to analyze for purgeing
   purge: {
     mode: "all",
-    content: [
-      "./components/**/*.{js,ts,jsx,tsx,css}",
-      "./pages/**/*.{js,ts,jsx,tsx}",
-    ],
+    content: ["./src/**/*.{js,ts,jsx,tsx,css}", "./pages/**/*.{js,ts,jsx,tsx}"],
     options: {
       safelist: { deep: [/blur$/] },
     },
@@ -63,7 +60,7 @@ module.exports = {
               backgroundColor: theme("colors.gray.700"),
             },
             a: {
-              color: theme("colors.neon-orange"),
+              color: theme("colors.purple.500"),
             },
           },
         },

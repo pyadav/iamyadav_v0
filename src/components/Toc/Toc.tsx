@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import clsx from "clsx";
-import useIntersectionObserver from "@hooks/useIntersectionObserver";
+import useIntersectionObserver from "src/hooks/useIntersectionObserver";
 
-export function TOC() {
+export function Toc() {
   const [headings, setHeadings] = useState<HTMLHeadingElement[]>([]);
 
   useEffect(() => {

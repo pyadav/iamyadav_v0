@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-export default function Comments() {
+export function Comment() {
   const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const scriptElement = document.createElement("script");

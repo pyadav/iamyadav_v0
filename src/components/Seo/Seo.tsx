@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { NextSeo } from "next-seo";
-import data from "@config/seo.json";
+import data from "config/seo.json";
 
 interface SEOProps {
   title?: string;
@@ -9,7 +9,7 @@ interface SEOProps {
   ogImage?: string;
 }
 
-export const SEO = ({ title, description, blog, ogImage }: SEOProps) => {
+export const Seo = ({ title, description, blog, ogImage }: SEOProps) => {
   const {
     author,
     image,

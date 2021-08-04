@@ -9,7 +9,7 @@ import rehypeHeadings from "rehype-autolink-headings";
 import readingTime from "reading-time";
 import { Frontmatter, Post } from "types/post";
 
-import { ROOT, paths } from "@utils/constants";
+import { ROOT, paths } from "utils/constants";
 
 function firstFourLines(file: any, options: any) {
   file.excerpt = file.content.substring(0, 120) + "...";

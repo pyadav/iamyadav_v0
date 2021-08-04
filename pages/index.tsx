@@ -1,9 +1,9 @@
 import { GetStaticProps } from "next";
 import Link from "next/link";
 
-import { Layout, Bio } from "@components/index";
-import { SEO } from "@components/SEO";
-import { getAllPosts } from "@utils/posts";
+import { Layout } from "src/layout";
+import { Seo } from "src/components/Seo";
+import { getAllPosts } from "utils/posts";
 import { Post } from "types/post";
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
 const Home: React.FC<Props> = ({ posts }: Props) => {
   return (
     <Layout>
-      <SEO title="Praveen Yadav" />
+      <Seo title="Praveen Yadav" />
       <h1 className="mt-32 mb-32 text-4xl font-bold text-center text-gray-800 md:text-5xl md:leading-snug dark:text-white md:mt-20 md:mb-20">
         Resources to help you <br />
         make more versatile developer
