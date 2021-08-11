@@ -10,7 +10,7 @@ import { paths, regexes } from "utils/constants";
 import { getFileSlugs, getAllPosts } from "utils/posts";
 import { getMdxBySlug } from "utils/mdx";
 
-import { Layout } from "src/layout";
+import { BlogLayout } from "src/layout";
 import { Bio } from "src/components/Bio";
 import { Seo } from "src/components/Seo";
 import { Comment } from "src/components/Comment";
@@ -28,7 +28,7 @@ export default function PostPage({ code, frontmatter }: Post) {
     canonical: `https://iamyadav.com/post/${frontmatter.slug}`,
   };
   return (
-    <Layout>
+    <BlogLayout>
       <Seo
         blog
         title={seo.title}
@@ -104,7 +104,7 @@ export default function PostPage({ code, frontmatter }: Post) {
           </footer>
         </article>
       </div>
-    </Layout>
+    </BlogLayout>
   );
 }
 
