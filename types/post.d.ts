@@ -8,6 +8,7 @@ export type Post = {
 export type Frontmatter = {
   slug: string;
   title: string;
+  subtitle: string;
   description: string;
   isPublished: boolean;
   publishedAt: string;

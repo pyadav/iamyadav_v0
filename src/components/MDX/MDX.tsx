@@ -38,6 +38,20 @@ const components = {
   h3: ({ ...props }) => {
     return <h3 {...props} data-toc />;
   },
+  ol: ({ children, ...props }: any) => {
+    return (
+      <ol {...props} className="mb-8 ml-10">
+        {children}
+      </ol>
+    );
+  },
+  ul: ({ children, ...props }: any) => {
+    return (
+      <ol {...props} className="mb-8 ml-10">
+        {children}
+      </ol>
+    );
+  },
 };
 
 export default components;

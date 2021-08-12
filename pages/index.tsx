@@ -23,6 +23,7 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
           frontmatter: {
             slug,
             title,
+            subtitle,
             description,
             publishedAt,
             updatedAt,
@@ -35,7 +36,7 @@ const Home: React.FC<Props> = ({ posts }: Props) => {
               <h3 className="mb-2">
                 <Link href={"/post/[...slug]"} as={`/post/${slug}`}>
                   <a className="text-3xl font-bold text-purple-700 dark:text-yellow-700 font-display">
-                    {title}
+                    {`${title} ${subtitle ? subtitle : ""}`}
                   </a>
                 </Link>
               </h3>

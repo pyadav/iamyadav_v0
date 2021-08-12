@@ -23,6 +23,7 @@ export default function PostPage({ code, frontmatter }: Post) {
 
   const seo = {
     title: frontmatter.title,
+    subtitle: frontmatter.subtitle,
     ogImage: frontmatter.ogImage,
     description: frontmatter.description || frontmatter.excerpt,
     canonical: `https://iamyadav.com/post/${frontmatter.slug}`,
@@ -31,7 +32,7 @@ export default function PostPage({ code, frontmatter }: Post) {
     <BlogLayout>
       <Seo
         blog
-        title={seo.title}
+        title={`${seo.title}${seo.subtitle && ` ${seo.subtitle}`}`}
         ogImage={seo.ogImage}
         description={seo.description}
       />
@@ -63,8 +64,11 @@ export default function PostPage({ code, frontmatter }: Post) {
         )}
         <article className="max-w-3xl min-w-0 text-base lg:text-lg text-fore-subtle">
           <header className="mb-8">
-            <h1 className="mb-2 text-4xl font-black leading-none lg:text-5xl font-display">
+            <h1 className="mb-4 text-4xl font-black leading-none lg:text-5xl font-display">
               {frontmatter.title}
+            </h1>
+            <h1 className="mb-2 text-4xl font-black leading-none lg:text-5xl font-display">
+              {frontmatter.subtitle}
             </h1>
             <div className="mb-10 text-sm tracking-normal text-fore-subtle">
               <time>{frontmatter.publishedAt}</time>
