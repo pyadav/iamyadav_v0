@@ -28,11 +28,9 @@ function getPosts(type) {
   return posts;
 }
 
+const isPublished = (post) => post?.isPublished;
 const sortByDate = (a, b) => {
-  return (
-    Number(new Date(b?.frontmatter?.publishedAt)) -
-    Number(new Date(a?.frontmatter?.publishedAt))
-  );
+  return Number(new Date(b?.publishedAt)) - Number(new Date(a?.publishedAt));
 };
 
 (async () => {
@@ -49,7 +47,7 @@ const sortByDate = (a, b) => {
       language: "en",
     });
 
-    const content = [...getPosts("blog")].sort(sortByDate);
+    const content = [...getPosts("blog")].filter(isPublished).sort(sortByDate);
     content.forEach((post) => {
       const url = `https://iamyadav.com/post/${post.slug}`;
 

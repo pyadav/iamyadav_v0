@@ -3,19 +3,25 @@ const chalk = require("chalk");
 const globby = require("globby");
 const prettier = require("prettier");
 
+const excludesFile = ["pages/post/[...slug].tsx"];
 (async () => {
   console.info(chalk.cyan("info"), ` - Generating sitemap`);
 
   const prettierConfig = await prettier.resolveConfig("./.prettierrc");
-  const pages = await globby([
-    "pages/**/*.tsx",
-    "content/**/*{.md,.mdx}",
-    "!pages/_*.tsx",
-    "!pages/404.tsx",
-    "!pages/500.tsx",
-    "!pages/post/[...slug].tsx",
-    "!pages/api",
-  ]);
+  const pages = (
+    await globby([
+      "pages/**/*.tsx",
+      "content/**/*{.md,.mdx}",
+      "!content/drafts/*{.md,.mdx}",
+      "!pages/_*.tsx",
+      "!pages/404.tsx",
+      "!pages/500.tsx",
+      "!pages/post/[...slug].tsx",
+      "!pages/api",
+    ])
+  ).filter((file) => {
+    return !excludesFile.includes(file);
+  });
   const sitemap = `
         <?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

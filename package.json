@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "postbuild": "node scripts/generate-rss.js & node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "clsx": "^1.1.1",
