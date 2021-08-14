@@ -26,30 +26,13 @@ export default function PostPage({ code, frontmatter }: Post) {
     subtitle: frontmatter.subtitle,
     ogImage: frontmatter.ogImage,
     description: frontmatter.description || frontmatter.excerpt,
-    canonical: `https://iamyadav.com/post/${frontmatter.slug}`,
   };
   return (
     <BlogLayout>
       <Seo
-        blog
-        title={`${seo.title}${seo.subtitle && ` ${seo.subtitle}`}`}
-        ogImage={seo.ogImage}
-        description={seo.description}
-      />
-      <NextSeo
-        canonical={seo.canonical}
-        openGraph={{
-          url: seo.canonical,
-          type: "article",
-          article: {
-            publishedTime: frontmatter.publishedAt,
-            authors: ["https://iamyadav.com"],
-            tags: frontmatter.tags,
-          },
-        }}
-        twitter={{
-          site: seo.canonical,
-        }}
+        isPost
+        post={frontmatter}
+        title={`${seo.title} ${seo.subtitle ? `${seo.subtitle}` : ""}`}
       />
       <div
         className={clsx("relative flex justify-between mt-12 mb-12", {

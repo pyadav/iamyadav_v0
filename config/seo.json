@@ -1,8 +1,11 @@
 {
   "siteMetadata": {
     "title": "Praveen Yadav",
+    "firstName": "Praveen",
+    "lastName": "Yadav",
     "author": "Praveen Yadav",
     "description": "Praveen Yadav is versatile javascript & golang developer",
+    "siteName": "iamyadav.com",
     "siteUrl": "https://iamyadav.com",
     "image": "/static/profile.jpeg",
     "language": "en-US",

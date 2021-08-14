@@ -1,52 +1,83 @@
 import Head from "next/head";
-import { NextSeo } from "next-seo";
+import { NextSeo, SocialProfileJsonLd, ArticleJsonLd } from "next-seo";
+import { useRouter } from "next/router";
+import { OpenGraph } from "next-seo/lib/types";
 import data from "config/seo.json";
+import { Frontmatter } from "types/post";
+import { formateDate } from "utils/helpers";
 
 interface SEOProps {
   title?: string;
-  description?: string;
-  blog?: boolean;
-  ogImage?: string;
+  post?: Frontmatter;
+  isPost?: boolean;
 }
 
-export const Seo = ({ title, description, blog, ogImage }: SEOProps) => {
-  const {
-    author,
-    image,
-    siteUrl,
-    social,
-    title: defaultTitle,
-    description: defaultDescription,
-  } = data.siteMetadata;
+const {
+  author,
+  image,
+  siteName,
+  siteUrl,
+  social,
+  firstName,
+  lastName,
+  title: defaultTitle,
+  description: defaultDescription,
+} = data.siteMetadata;
+
+const socials = [
+  "https://www.linkedin.com/in/osfreak",
+  "https://github.com/pyadav",
+  "https://twitter.com/osfreak",
+  "https://dev.to/pyadav",
+  "https://osfreak.medium.com",
+];
+
+export const Seo = ({ title = defaultTitle, isPost, post }: SEOProps) => {
+  const router = useRouter();
+  const url = siteUrl + router.asPath;
+  const ogImage = {
+    url: `https://cdn.statically.io/og/theme=dark/${encodeURI(title)}.png`,
+    alt: title,
+  };
+  const ogImages = post?.ogImage
+    ? [
+        {
+          url: siteUrl + post?.ogImage,
+          title: title,
+        },
+        ogImage,
+      ]
+    : [ogImage];
 
   const seo = {
     title: title || defaultTitle,
-    description: description || defaultDescription,
-    image: `${siteUrl}${blog ? ogImage : image}`,
+    description: post?.description || post?.excerpt || defaultDescription,
+    image: `${isPost ? `${siteUrl + post?.ogImage}` : ogImage}`,
     url: `${siteUrl}`,
   };
 
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "Website",
-    url: seo.url,
-    name: seo.title,
+  const openGraph: OpenGraph = {
+    title,
+    url,
+    type: "website",
+    site_name: siteName,
+    images: ogImages,
+    locale: router.locale,
+    profile: {
+      firstName,
+      lastName,
+      gender: "male",
+    },
   };
 
-  const personSchema = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: author,
-    url: siteUrl,
-    jobTitle: "Product Engineer",
-    gender: "male",
-    sameAs: [
-      "https://www.linkedin.com/in/osfreak",
-      "https://github.com/pyadav",
-      "https://twitter.com/osfreak",
-      "https://dev.to/pyadav",
-      "https://osfreak.medium.com",
-    ],
+  const postOpenGraph: OpenGraph = {
+    type: "article",
+    article: {
+      section: "Technology",
+      publishedTime: formateDate(post?.publishedAt),
+      modifiedTime: formateDate(post?.updatedAt),
+      authors: [author],
+    },
   };
 
   return (
@@ -60,26 +91,13 @@ export const Seo = ({ title, description, blog, ogImage }: SEOProps) => {
           title="RSS Feed for iamyadav.com"
           href={`${siteUrl}/rss.xml`}
         ></link>
-
-        <script type="application/ld+json">
-          {JSON.stringify(websiteSchema)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(personSchema)}
-        </script>
       </Head>
 
       <NextSeo
         title={seo.title}
         description={seo.description}
-        canonical={siteUrl}
-        openGraph={{
-          type: "website",
-          url: seo.url,
-          title: seo.title,
-          site_name: seo.title,
-          description: seo.description,
-        }}
+        canonical={url}
+        openGraph={isPost ? { ...openGraph, ...postOpenGraph } : openGraph}
         twitter={{
           handle: social.twitter,
           site: seo.url,
@@ -94,12 +112,27 @@ export const Seo = ({ title, description, blog, ogImage }: SEOProps) => {
             name: "HandheldFriendly",
             content: "true",
           },
-          {
-            property: "og:image",
-            content: seo.image,
-          },
         ]}
       />
+      <SocialProfileJsonLd
+        name={author}
+        type="person"
+        url={url}
+        sameAs={Object.values(socials)}
+      />
+      {isPost && (
+        <ArticleJsonLd
+          authorName={author}
+          datePublished={formateDate(post?.publishedAt)}
+          dateModified={formateDate(post?.updatedAt)}
+          description={seo.description}
+          images={[siteUrl + post?.ogImage, ogImage.url]}
+          publisherLogo={siteUrl + image}
+          publisherName={siteName}
+          title={title}
+          url={url}
+        />
+      )}
     </>
   );
 };
