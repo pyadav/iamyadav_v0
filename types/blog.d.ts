@@ -1,9 +1,14 @@
-export type Post = {
+export type Blog = {
   code: string;
   frontmatter: Frontmatter;
-  nextPost: ?Post;
-  previousPost: ?Post;
+  nextBlog: ?Blog;
+  previousBlog: ?Blog;
 };
+
+export type Breadcrumbs = {
+  name: string;
+  item?: string;
+}[];
 
 export type Frontmatter = {
   slug: string;
@@ -14,6 +19,7 @@ export type Frontmatter = {
   publishedAt: string;
   updatedAt?: string;
   tags: string[];
+
   toc?: boolean;
   ogImage?: string;
   excerpt?: string;

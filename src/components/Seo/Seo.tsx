@@ -1,15 +1,21 @@
 import Head from "next/head";
-import { NextSeo, SocialProfileJsonLd, ArticleJsonLd } from "next-seo";
+import {
+  NextSeo,
+  SocialProfileJsonLd,
+  ArticleJsonLd,
+  BreadcrumbJsonLd,
+} from "next-seo";
 import { useRouter } from "next/router";
 import { OpenGraph } from "next-seo/lib/types";
 import data from "config/seo.json";
-import { Frontmatter } from "types/post";
+import { Frontmatter, Breadcrumbs } from "types/blog";
 import { formateDate } from "utils/helpers";
 
 interface SEOProps {
   title?: string;
-  post?: Frontmatter;
-  isPost?: boolean;
+  blog?: Frontmatter;
+  isBlog?: boolean;
+  breadcrumbs?: Breadcrumbs;
 }
 
 const {
@@ -32,17 +38,22 @@ const socials = [
   "https://osfreak.medium.com",
 ];
 
-export const Seo = ({ title = defaultTitle, isPost, post }: SEOProps) => {
+export const Seo = ({
+  title = defaultTitle,
+  isBlog,
+  blog,
+  breadcrumbs,
+}: SEOProps) => {
   const router = useRouter();
-  const url = siteUrl + router.asPath;
+  const url = siteUrl.concat(router.asPath);
   const ogImage = {
     url: `https://cdn.statically.io/og/theme=dark/${encodeURI(title)}.png`,
     alt: title,
   };
-  const ogImages = post?.ogImage
+  const ogImages = blog?.ogImage
     ? [
         {
-          url: siteUrl + post?.ogImage,
+          url: siteUrl.concat(blog?.ogImage),
           title: title,
         },
         ogImage,
@@ -51,8 +62,8 @@ export const Seo = ({ title = defaultTitle, isPost, post }: SEOProps) => {
 
   const seo = {
     title: title || defaultTitle,
-    description: post?.description || post?.excerpt || defaultDescription,
-    image: `${isPost ? `${siteUrl + post?.ogImage}` : ogImage}`,
+    description: blog?.description || blog?.excerpt || defaultDescription,
+    image: blog?.ogImage ? `${siteUrl + blog?.ogImage}` : ogImage.url,
     url: `${siteUrl}`,
   };
 
@@ -70,12 +81,12 @@ export const Seo = ({ title = defaultTitle, isPost, post }: SEOProps) => {
     },
   };
 
-  const postOpenGraph: OpenGraph = {
+  const blogOpenGraph: OpenGraph = {
     type: "article",
     article: {
       section: "Technology",
-      publishedTime: formateDate(post?.publishedAt),
-      modifiedTime: formateDate(post?.updatedAt),
+      publishedTime: formateDate(blog?.publishedAt),
+      modifiedTime: formateDate(blog?.updatedAt),
       authors: [author],
     },
   };
@@ -95,9 +106,11 @@ export const Seo = ({ title = defaultTitle, isPost, post }: SEOProps) => {
 
       <NextSeo
         title={seo.title}
+        defaultTitle="Home"
+        titleTemplate="%s | iamyadav"
         description={seo.description}
         canonical={url}
-        openGraph={isPost ? { ...openGraph, ...postOpenGraph } : openGraph}
+        openGraph={isBlog ? { ...openGraph, ...blogOpenGraph } : openGraph}
         twitter={{
           handle: social.twitter,
           site: seo.url,
@@ -120,17 +133,26 @@ export const Seo = ({ title = defaultTitle, isPost, post }: SEOProps) => {
         url={url}
         sameAs={Object.values(socials)}
       />
-      {isPost && (
+      {isBlog && (
         <ArticleJsonLd
+          url={url}
+          title={title}
           authorName={author}
-          datePublished={formateDate(post?.publishedAt)}
-          dateModified={formateDate(post?.updatedAt)}
+          datePublished={formateDate(blog?.publishedAt)}
+          dateModified={formateDate(blog?.updatedAt)}
           description={seo.description}
-          images={[siteUrl + post?.ogImage, ogImage.url]}
+          images={[siteUrl + blog?.ogImage, ogImage.url]}
           publisherLogo={siteUrl + image}
           publisherName={siteName}
-          title={title}
-          url={url}
+        />
+      )}
+      {breadcrumbs && (
+        <BreadcrumbJsonLd
+          itemListElements={breadcrumbs.map((breadcrumb, index) => ({
+            position: index + 1,
+            name: breadcrumb?.name ?? "",
+            item: breadcrumb?.item ?? "",
+          }))}
         />
       )}
     </>

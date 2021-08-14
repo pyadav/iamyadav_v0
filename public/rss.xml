@@ -9,22 +9,22 @@
             <link>https://iamyadav.com</link>
         </image>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 13 Aug 2021 14:54:41 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 14 Aug 2021 09:42:47 GMT</lastBuildDate>
         <atom:link href="https://iamyadav.com/rss.xml" rel="self" type="application/rss+xml"/>
         <language><![CDATA[en]]></language>
         <item>
             <title><![CDATA[MDX bundler with Next.JS]]></title>
             <description><![CDATA[MDX is just an extension of Markdown that allows you to import and write JSX in your markdown documents.]]></description>
-            <link>https://iamyadav.com/post/use-mdx-bundler-with-next-js</link>
-            <guid isPermaLink="false">https://iamyadav.com/post/use-mdx-bundler-with-next-js</guid>
+            <link>https://iamyadav.com/blogs/use-mdx-bundler-with-next-js</link>
+            <guid isPermaLink="false">https://iamyadav.com/blogs/use-mdx-bundler-with-next-js</guid>
             <dc:creator><![CDATA[Praveen Yadav]]></dc:creator>
             <pubDate>Tue, 03 Aug 2021 00:00:00 GMT</pubDate>
         </item>
         <item>
             <title><![CDATA[Error handling in Golang]]></title>
             <description><![CDATA[Unlike other language, golang does explicit error checking. In golang, errors are values and we can transform any type into error by implementing the error interface which has a single Error() method.]]></description>
-            <link>https://iamyadav.com/post/error-handling-in-golang</link>
-            <guid isPermaLink="false">https://iamyadav.com/post/error-handling-in-golang</guid>
+            <link>https://iamyadav.com/blogs/error-handling-in-golang</link>
+            <guid isPermaLink="false">https://iamyadav.com/blogs/error-handling-in-golang</guid>
             <dc:creator><![CDATA[Praveen Yadav]]></dc:creator>
             <pubDate>Sun, 01 Aug 2021 00:00:00 GMT</pubDate>
         </item>

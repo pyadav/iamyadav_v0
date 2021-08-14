@@ -13,10 +13,9 @@ type Props = {
 const Home: React.FC<Props> = ({ blogs }: Props) => {
   return (
     <Layout>
-      <Seo title="Praveen Yadav's blog" />
-      <h1 className="mt-32 mb-32 text-4xl font-bold text-center text-gray-800 md:text-5xl md:leading-snug dark:text-white md:mt-20 md:mb-20">
-        Resources to help you <br />
-        make more versatile developer
+      <Seo title="Praveen Yadav's blogs" />
+      <h1 className="mt-32 mb-32 text-4xl font-bold text-gray-800 md:text-5xl md:leading-snug dark:text-white md:mt-20 md:mb-20">
+        Blog lists
       </h1>
       {blogs.map(
         ({
@@ -34,7 +33,7 @@ const Home: React.FC<Props> = ({ blogs }: Props) => {
           <article key={slug}>
             <header className="mb-2">
               <h3 className="mb-2">
-                <Link href={"/blogs/[...slug]"} as={`/blogs/${slug}`}>
+                <Link href={"/blog/[...slug]"} as={`/blog/${slug}`}>
                   <a className="text-3xl font-bold text-purple-700 dark:text-yellow-700 font-display">
                     {`${title} ${subtitle ? subtitle : ""}`}
                   </a>

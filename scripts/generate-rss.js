@@ -6,29 +6,29 @@ const matter = require("gray-matter");
 
 const root = process.cwd();
 const typeToPath = {
-  blog: "content/posts",
+  blogs: "content/blogs",
 };
 
-function getPosts(type) {
+function getBlogs(type) {
   const files = fs.readdirSync(path.join(root, typeToPath[type]));
-  const posts = files.reduce((allPosts, postSlug) => {
+  const blogs = files.reduce((allBlogs, blogSlug) => {
     const source = fs.readFileSync(
-      path.join(root, typeToPath[type], postSlug),
+      path.join(root, typeToPath[type], blogSlug),
       "utf8",
     );
     const { data } = matter(source);
     return [
       {
         ...data,
-        slug: postSlug.replace(".mdx", ""),
+        slug: blogSlug.replace(".mdx", ""),
       },
-      ...allPosts,
+      ...allBlogs,
     ];
   }, []);
-  return posts;
+  return blogs;
 }
 
-const isPublished = (post) => post?.isPublished;
+const isPublished = (blog) => blog?.isPublished;
 const sortByDate = (a, b) => {
   return Number(new Date(b?.publishedAt)) - Number(new Date(a?.publishedAt));
 };
@@ -47,14 +47,14 @@ const sortByDate = (a, b) => {
       language: "en",
     });
 
-    const content = [...getPosts("blog")].filter(isPublished).sort(sortByDate);
-    content.forEach((post) => {
-      const url = `https://iamyadav.com/post/${post.slug}`;
+    const content = [...getBlogs("blogs")].filter(isPublished).sort(sortByDate);
+    content.forEach((blog) => {
+      const url = `https://iamyadav.com/blogs/${blog.slug}`;
 
       feed.item({
-        title: post.title,
-        description: post.description,
-        date: new Date(post.publishedAt),
+        title: blog.title,
+        description: blog.description,
+        date: new Date(blog.publishedAt),
         author: "Praveen Yadav",
         url,
         guid: url,

@@ -4,15 +4,15 @@ export const ROOT = process.cwd();
 
 export const paths = {
   api: path.join(ROOT, "pages", "api"),
-  posts: path.join(ROOT, "content", "posts"),
+  blogs: path.join(ROOT, "content", "blogs"),
   drafts: path.join(ROOT, "content", "drafts"),
   components: path.join(ROOT, "components"),
 };
 
 export const regexes = {
-  posts: /posts\//,
-  archive: /(posts\/archive\/.+)/,
-  contentPosts: /content\/posts\//,
+  blogs: /blogs\//,
+  archive: /(blogs\/archive\/.+)/,
+  contentBlogs: /content\/blogs\//,
   contentDrafts: /content\/drafts\//,
   mdx: /\.mdx?$/,
   tsx: /\.tsx?$/,

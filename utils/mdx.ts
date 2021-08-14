@@ -7,7 +7,7 @@ import rehypeSlug from "rehype-slug";
 import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHeadings from "rehype-autolink-headings";
 import readingTime from "reading-time";
-import { Frontmatter, Post } from "types/post";
+import { Frontmatter, Blog } from "types/blog";
 
 import { ROOT, paths } from "utils/constants";
 
@@ -62,8 +62,8 @@ const getCompiledMDX = async (content: string) => {
     throw new Error(error);
   }
 };
-export const getMdxBySlug = async (filename: string): Promise<Post> => {
-  const source = getFileContent(`${paths.posts}/${filename}.mdx`);
+export const getMdxBySlug = async (filename: string): Promise<Blog> => {
+  const source = getFileContent(`${paths.blogs}/${filename}.mdx`);
   const { code, frontmatter } = await getCompiledMDX(source);
   const { content, excerpt } = parseFileContent(source) as any;
 
@@ -75,7 +75,7 @@ export const getMdxBySlug = async (filename: string): Promise<Post> => {
       slug: filename,
       readingTime: readingTime(content),
     } as Frontmatter,
-    nextPost: null,
-    previousPost: null,
+    nextBlog: null,
+    previousBlog: null,
   };
 };

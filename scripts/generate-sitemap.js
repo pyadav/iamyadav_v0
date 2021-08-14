@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const globby = require("globby");
 const prettier = require("prettier");
 
-const excludesFile = ["pages/post/[...slug].tsx"];
+const excludesFile = ["pages/blogs/[...slug].tsx"];
 (async () => {
   console.info(chalk.cyan("info"), ` - Generating sitemap`);
 
@@ -16,12 +16,14 @@ const excludesFile = ["pages/post/[...slug].tsx"];
       "!pages/_*.tsx",
       "!pages/404.tsx",
       "!pages/500.tsx",
-      "!pages/post/[...slug].tsx",
+      "!pages/blogs/[...slug].tsx",
       "!pages/api",
     ])
   ).filter((file) => {
     return !excludesFile.includes(file);
   });
+
+  console.log(pages);
   const sitemap = `
         <?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -31,16 +33,17 @@ const excludesFile = ["pages/post/[...slug].tsx"];
                   .replace("pages", "")
                   .replace("content", "")
                   .replace(".tsx", "")
-                  .replace(".mdx", "");
+                  .replace(".mdx", "")
+                  .replace("/index", "");
                 const route = path === "/index" ? "" : path;
                 return `
                       <url>
                           <loc>${`https://iamyadav.com${route}`}</loc>
                           <changefreq>${
-                            route.includes("/post") ? "monthly" : "daily"
+                            route.includes("/blogs") ? "monthly" : "daily"
                           }</changefreq>
                           <priority>${
-                            route.includes("/post") ? 0.7 : 0.2
+                            route.includes("/blogs") ? 0.7 : 0.2
                           }</priority>
                       </url>   
                     `;

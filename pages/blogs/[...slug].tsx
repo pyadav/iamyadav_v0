@@ -1,5 +1,4 @@
 import React from "react";
-import { NextSeo } from "next-seo";
 
 import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -7,31 +6,47 @@ import Image from "next/image";
 
 import clsx from "clsx";
 import { paths, regexes } from "utils/constants";
-import { getFileSlugs, getAllPosts } from "utils/posts";
+import { getFileSlugs, getAllBlogs } from "utils/blogs";
 import { getMdxBySlug } from "utils/mdx";
-
+import data from "config/seo.json";
 import { BlogLayout } from "src/layout";
 import { Bio } from "src/components/Bio";
 import { Seo } from "src/components/Seo";
 import { Comment } from "src/components/Comment";
 import { Toc } from "src/components/Toc";
 import components from "src/components/MDX/MDX";
-import { Post } from "types/post";
+import { Blog } from "types/blog";
 
-export default function PostPage({ code, frontmatter }: Post) {
+export default function BlogPage({ code, frontmatter }: Blog) {
   const MDXComponent = React.useMemo(() => getMDXComponent(code), [code]);
 
+  const { siteUrl } = data.siteMetadata;
   const seo = {
     title: frontmatter.title,
     subtitle: frontmatter.subtitle,
     ogImage: frontmatter.ogImage,
     description: frontmatter.description || frontmatter.excerpt,
   };
+
+  const breadcrumbs = [
+    {
+      name: "Home",
+      item: siteUrl,
+    },
+    {
+      name: "Blogs",
+      item: siteUrl + "/blogs",
+    },
+    {
+      name: frontmatter.title,
+    },
+  ];
   return (
     <BlogLayout>
       <Seo
-        isPost
-        post={frontmatter}
+        isBlog
+        blog={frontmatter}
+        breadcrumbs={breadcrumbs}
         title={`${seo.title} ${seo.subtitle ? `${seo.subtitle}` : ""}`}
       />
       <div
@@ -97,17 +112,17 @@ export default function PostPage({ code, frontmatter }: Post) {
 
 export const getStaticProps: GetStaticProps = async ({ params }: any) => {
   try {
-    const post = await getMdxBySlug(params.slug.join("/"));
-    const posts = await getAllPosts();
+    const blog = await getMdxBySlug(params.slug.join("/"));
+    const blogs = await getAllBlogs();
 
     return {
       props: {
-        ...post,
-        nextPost:
-          posts.find((p: any) => p.nextPost === post.frontmatter.slug)
+        ...blog,
+        nextBlog:
+          blogs.find((p: any) => p.nextBlog === blog.frontmatter.slug)
             ?.frontmatter.slug || null,
-        previousPost:
-          posts.find((p: any) => p.previousPost === post.frontmatter.slug)
+        previousBlog:
+          blogs.find((p: any) => p.previousBlog === blog.frontmatter.slug)
             ?.frontmatter.slug || null,
       },
     };
@@ -117,7 +132,7 @@ export const getStaticProps: GetStaticProps = async ({ params }: any) => {
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const filePaths = getFileSlugs(paths.posts, regexes.contentPosts)
+  const filePaths = getFileSlugs(paths.blogs, regexes.contentBlogs)
     // Remove file extensions for page paths.
     .map((path) => path.replace(regexes.mdx, ""))
     // Map the path into the static paths object required by Next.js
