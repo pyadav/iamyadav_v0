@@ -14,9 +14,13 @@ const Home: React.FC<Props> = ({ blogs }: Props) => {
   return (
     <Layout>
       <Seo title="Praveen Yadav's blogs" />
-      <h1 className="mt-32 mb-32 text-4xl font-bold text-gray-800 md:text-5xl md:leading-snug dark:text-white md:mt-20 md:mb-20">
+      <h1 className="mt-32 text-4xl font-bold text-gray-800 md:text-5xl md:leading-snug dark:text-white md:mt-20">
         Blog lists
       </h1>
+      <p className="mb-32 md:mb-20">
+        Here are some of my thoughts and musings about programming and software
+        development.
+      </p>
       {blogs.map(
         ({
           frontmatter: {

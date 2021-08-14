@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next export",
     "analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "postbuild": "node scripts/generate-rss.js & node scripts/generate-sitemap.js"

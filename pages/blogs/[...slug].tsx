@@ -13,8 +13,9 @@ import data from "config/seo.json";
 import { BlogLayout } from "src/layout";
 import { Bio } from "src/components/Bio";
 import { Seo } from "src/components/Seo";
-import { Comment } from "src/components/Comment";
 import { Toc } from "src/components/Toc";
+import { Comment } from "src/components/Comment";
+import { Tag } from "src/components/Tag";
 import components from "src/components/MDX/MDX";
 import { Blog } from "types/blog";
 
@@ -85,6 +86,9 @@ export default function BlogPage({
                   </span>
                 </>
               )}
+              {frontmatter.tags.map((tag, id) => (
+                <Tag key={id} tag={tag} />
+              ))}
             </div>
             {frontmatter.ogImage && (
               <Image
@@ -108,7 +112,7 @@ export default function BlogPage({
                 <div>
                   <h6>Previous post</h6>
                   <div className="font-medium text-purple-500 transition-colors dark:text-yellow-500 hover:text-purple-700 dark:hover:text-yellow-700">
-                    <Link href={"/blogs/" + previousBlog.slug}>
+                    <Link href={`/blogs/${previousBlog.slug}`}>
                       {previousBlog.title}
                     </Link>
                   </div>
@@ -120,7 +124,7 @@ export default function BlogPage({
                 <div>
                   <h6>Next post</h6>
                   <div className="font-medium text-purple-500 transition-colors dark:text-yellow-500 hover:text-purple-700 dark:hover:text-yellow-700">
-                    <Link href={"/blogs/" + nextBlog.slug}>
+                    <Link href={`/blogs/${nextBlog.slug}`}>
                       {nextBlog.title}
                     </Link>
                   </div>

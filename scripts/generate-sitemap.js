@@ -16,7 +16,7 @@ const excludesFile = ["pages/blogs/[...slug].tsx"];
       "!pages/_*.tsx",
       "!pages/404.tsx",
       "!pages/500.tsx",
-      "!pages/blogs/[...slug].tsx",
+      "!pages/tags/[tag].tsx",
       "!pages/api",
     ])
   ).filter((file) => {

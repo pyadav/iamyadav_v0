@@ -13,6 +13,7 @@ import { formateDate } from "utils/helpers";
 
 interface SEOProps {
   title?: string;
+  description?: string;
   blog?: Frontmatter;
   isBlog?: boolean;
   breadcrumbs?: Breadcrumbs;
@@ -42,6 +43,7 @@ export const Seo = ({
   title = defaultTitle,
   isBlog,
   blog,
+  description,
   breadcrumbs,
 }: SEOProps) => {
   const router = useRouter();
@@ -59,10 +61,11 @@ export const Seo = ({
         ogImage,
       ]
     : [ogImage];
+  description = description || defaultDescription;
 
   const seo = {
     title: title || defaultTitle,
-    description: blog?.description || blog?.excerpt || defaultDescription,
+    description: blog?.description || blog?.excerpt || description,
     image: blog?.ogImage ? `${siteUrl + blog?.ogImage}` : ogImage.url,
     url: `${siteUrl}`,
   };

@@ -62,6 +62,7 @@ export const parseBlogs = async (fileSlugs: Array<string>): Promise<Blog[]> => {
 };
 
 export const getAllBlogs = async (): Promise<Blog[]> => {
+  // TODO: support multiple dir support
   const fileSlugs = getFileSlugs(paths.blogs, regexes.contentBlogs);
   const blogs = (await parseBlogs(fileSlugs))
     .filter(isPublished)
@@ -89,3 +90,22 @@ export const addsPaginationToBlogs = (
   });
   return acc;
 };
+
+export const getAllTags = (blogs: Blog[]) => {
+  const tags = blogs.reduce((tags: string[], blog: Blog) => {
+    if (blog.frontmatter.tags) {
+      return [...tags, ...blog.frontmatter.tags];
+    }
+    return tags;
+  }, []);
+  return [...new Set(tags)];
+};
+
+export function getBlogsByTag(blogs: Blog[], tag: string): Blog[] {
+  return blogs.reduce((acc, blog) => {
+    if (blog.frontmatter.tags && blog.frontmatter.tags.includes(tag)) {
+      acc.push(blog);
+    }
+    return acc;
+  }, [] as Blog[]);
+}
