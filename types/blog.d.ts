@@ -1,8 +1,8 @@
 export type Blog = {
   code: string;
   frontmatter: Frontmatter;
-  nextBlog: ?Blog;
-  previousBlog: ?Blog;
+  nextBlog: ?Frontmatter;
+  previousBlog: ?Frontmatter;
 };
 
 export type Breadcrumbs = {

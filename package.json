@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "export": "next export",
     "analyze": "ANALYZE=true next build",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "postbuild": "node scripts/generate-rss.js & node scripts/generate-sitemap.js"
@@ -16,7 +17,7 @@
     "esbuild": "^0.12.15",
     "gray-matter": "^4.0.3",
     "mdx-bundler": "^5.1.0",
-    "next": "11.0.1",
+    "next": "^11.1.0",
     "next-compose-plugins": "^2.2.1",
     "next-seo": "^4.26.0",
     "next-themes": "^0.0.15",

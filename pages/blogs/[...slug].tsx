@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/link-passhref */
 import React from "react";
-
+import Link from "next/link";
 import { getMDXComponent } from "mdx-bundler/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
@@ -17,9 +18,13 @@ import { Toc } from "src/components/Toc";
 import components from "src/components/MDX/MDX";
 import { Blog } from "types/blog";
 
-export default function BlogPage({ code, frontmatter }: Blog) {
+export default function BlogPage({
+  code,
+  frontmatter,
+  previousBlog,
+  nextBlog,
+}: Blog) {
   const MDXComponent = React.useMemo(() => getMDXComponent(code), [code]);
-
   const { siteUrl } = data.siteMetadata;
   const seo = {
     title: frontmatter.title,
@@ -97,6 +102,41 @@ export default function BlogPage({ code, frontmatter }: Blog) {
           <div className="max-w-3xl mb-8 prose dark:prose-dark">
             <MDXComponent components={components} />
           </div>
+          <div className="pt-6 pb-8 space-y-2 md:space-y-5">
+            <nav className="flex justify-between">
+              {previousBlog?.slug ? (
+                <div>
+                  <h6>Previous post</h6>
+                  <div className="font-medium text-purple-500 transition-colors dark:text-yellow-500 hover:text-purple-700 dark:hover:text-yellow-700">
+                    <Link href={"/blogs/" + previousBlog.slug}>
+                      {previousBlog.title}
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <span />
+              )}
+              {nextBlog?.slug ? (
+                <div>
+                  <h6>Next post</h6>
+                  <div className="font-medium text-purple-500 transition-colors dark:text-yellow-500 hover:text-purple-700 dark:hover:text-yellow-700">
+                    <Link href={"/blogs/" + nextBlog.slug}>
+                      {nextBlog.title}
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <span />
+              )}
+            </nav>
+          </div>
+          <div className="pt-4 xl:pt-8">
+            <Link href="/blogs">
+              <span className="cursor-pointer text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
+                &larr; Back to the blogs
+              </span>
+            </Link>
+          </div>
 
           <Comment />
 
@@ -120,10 +160,10 @@ export const getStaticProps: GetStaticProps = async ({ params }: any) => {
         ...blog,
         nextBlog:
           blogs.find((p: any) => p.nextBlog === blog.frontmatter.slug)
-            ?.frontmatter.slug || null,
+            ?.frontmatter || null,
         previousBlog:
           blogs.find((p: any) => p.previousBlog === blog.frontmatter.slug)
-            ?.frontmatter.slug || null,
+            ?.frontmatter || null,
       },
     };
   } catch (e) {
