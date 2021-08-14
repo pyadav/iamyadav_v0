@@ -3,11 +3,16 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { Seo } from "src/components/Seo";
 import { BlogCard } from "src/components/BlogCard/BlogCard";
 
-import { getAllBlogs, getAllTags, getBlogsByTag } from "utils/blogs";
-import { Blog } from "types/blog";
+import {
+  getAllBlogs,
+  getAllBlogsFrontmatter,
+  getAllTags,
+  getBlogsByTag,
+} from "utils/blogs";
+import { Blog, Frontmatter } from "types/blog";
 
 interface TagProps {
-  blogs: Blog[];
+  blogs: Frontmatter[];
   tag: string;
   tags: string[];
 }
@@ -23,14 +28,14 @@ const Home: React.FC<TagProps> = ({ blogs, tag, tags }) => {
         Posts tagged with: {tag}
       </h1>
       {blogs.map((blog) => (
-        <BlogCard key={blog.frontmatter.slug} {...blog} />
+        <BlogCard key={blog.slug} {...blog} />
       ))}
     </Layout>
   );
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const blogs = await getAllBlogs();
+  const blogs = await getAllBlogsFrontmatter();
   const filePaths = getAllTags(blogs).map((tag) => ({ params: { tag } }));
 
   return {
@@ -42,7 +47,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({
   params: { tag },
 }: any) => {
-  const blogs = await getAllBlogs();
+  const blogs = await getAllBlogsFrontmatter();
   const blogsByTag = getBlogsByTag(blogs, tag);
 
   const tags = getAllTags(blogs)

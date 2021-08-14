@@ -1,8 +1,20 @@
 import fs from "fs";
+import readingTime from "reading-time";
+import matter from "gray-matter";
 import { paths, regexes } from "utils/constants";
 import { getMdxBySlug } from "./mdx";
 import { EXTReplacer } from "./helpers";
 import { Frontmatter, Blog } from "types/blog";
+
+const firstFourLines = (file: any, options: any) => {
+  file.excerpt = file.content.substring(0, 120) + "...";
+};
+
+export const parseFileContent = (source: string) =>
+  matter(source.trim(), { excerpt: firstFourLines as any });
+
+export const getFileContent = (filename: string) =>
+  fs.readFileSync(filename, "utf8");
 
 // Get day in format: Month day, Year. e.g. April 19, 2020
 export function getFormattedDate(date: Date) {
@@ -61,6 +73,39 @@ export const parseBlogs = async (fileSlugs: Array<string>): Promise<Blog[]> => {
   return blogs;
 };
 
+export const blogsFrontmatter = async (
+  fileSlugs: Array<string>,
+): Promise<Frontmatter[]> => {
+  const blogs = await Promise.all(
+    fileSlugs.map(async (slug: string) => {
+      const source = getFileContent(`${paths.blogs}/${slug}`);
+      const { content, excerpt } = parseFileContent(source) as any;
+      const { data } = matter(source);
+      return {
+        ...(data as Frontmatter),
+        slug: EXTReplacer(slug, regexes.mdx),
+        readingTime: readingTime(content),
+        excerpt,
+      };
+    }),
+  );
+  return blogs;
+};
+
+export const getAllBlogsFrontmatter = async (): Promise<Frontmatter[]> => {
+  const fileSlugs = getFileSlugs(paths.blogs, regexes.contentBlogs);
+
+  const blogs = (await blogsFrontmatter(fileSlugs))
+    .filter((blog: Frontmatter) => blog?.isPublished)
+    .sort((a: Frontmatter, b: Frontmatter) => {
+      return (
+        Number(new Date(b?.publishedAt as string)) -
+        Number(new Date(a?.publishedAt as string))
+      );
+    });
+  return blogs;
+};
+
 export const getAllBlogs = async (): Promise<Blog[]> => {
   // TODO: support multiple dir support
   const fileSlugs = getFileSlugs(paths.blogs, regexes.contentBlogs);
@@ -91,21 +136,24 @@ export const addsPaginationToBlogs = (
   return acc;
 };
 
-export const getAllTags = (blogs: Blog[]) => {
-  const tags = blogs.reduce((tags: string[], blog: Blog) => {
-    if (blog.frontmatter.tags) {
-      return [...tags, ...blog.frontmatter.tags];
+export const getAllTags = (blogs: Frontmatter[]) => {
+  const tags = blogs.reduce((tags: string[], blog: Frontmatter) => {
+    if (blog.tags) {
+      return [...tags, ...blog.tags];
     }
     return tags;
   }, []);
   return [...new Set(tags)];
 };
 
-export function getBlogsByTag(blogs: Blog[], tag: string): Blog[] {
+export function getBlogsByTag(
+  blogs: Frontmatter[],
+  tag: string,
+): Frontmatter[] {
   return blogs.reduce((acc, blog) => {
-    if (blog.frontmatter.tags && blog.frontmatter.tags.includes(tag)) {
+    if (blog.tags && blog.tags.includes(tag)) {
       acc.push(blog);
     }
     return acc;
-  }, [] as Blog[]);
+  }, [] as Frontmatter[]);
 }

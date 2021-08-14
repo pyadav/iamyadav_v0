@@ -1,6 +1,4 @@
 import path from "path";
-import fs from "fs";
-import matter from "gray-matter";
 import { bundleMDX } from "mdx-bundler";
 import rehypePrism from "@mapbox/rehype-prism";
 import rehypeSlug from "rehype-slug";
@@ -8,15 +6,9 @@ import { rehypeAccessibleEmojis } from "rehype-accessible-emojis";
 import rehypeHeadings from "rehype-autolink-headings";
 import readingTime from "reading-time";
 import { Frontmatter, Blog } from "types/blog";
-
+import { getFileContent, parseFileContent } from "utils/blogs";
 import { ROOT, paths } from "utils/constants";
 
-function firstFourLines(file: any, options: any) {
-  file.excerpt = file.content.substring(0, 120) + "...";
-}
-const getFileContent = (filename: string) => fs.readFileSync(filename, "utf8");
-const parseFileContent = (source: string) =>
-  matter(source.trim(), { excerpt: firstFourLines as any });
 const getCompiledMDX = async (content: string) => {
   if (process.platform === "win32") {
     process.env.ESBUILD_BINARY_PATH = path.join(
@@ -64,8 +56,8 @@ const getCompiledMDX = async (content: string) => {
 };
 export const getMdxBySlug = async (filename: string): Promise<Blog> => {
   const source = getFileContent(`${paths.blogs}/${filename}.mdx`);
-  const { code, frontmatter } = await getCompiledMDX(source);
   const { content, excerpt } = parseFileContent(source) as any;
+  const { code, frontmatter } = await getCompiledMDX(source);
 
   return {
     code,

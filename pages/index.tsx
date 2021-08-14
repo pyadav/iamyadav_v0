@@ -2,13 +2,12 @@ import React from "react";
 import { GetStaticProps } from "next";
 import { Layout } from "src/layout";
 import { Seo } from "src/components/Seo";
-import { getAllBlogs } from "utils/blogs";
-
-import { Blog } from "types/blog";
+import { getAllBlogsFrontmatter } from "utils/blogs";
+import { Frontmatter } from "types/blog";
 import { BlogCard } from "src/components/BlogCard/BlogCard";
 
 type Props = {
-  blogs: Blog[];
+  blogs: Frontmatter[];
 };
 
 const Home: React.FC<Props> = ({ blogs }: Props) => {
@@ -20,14 +19,14 @@ const Home: React.FC<Props> = ({ blogs }: Props) => {
         make more versatile developer
       </h1>
       {blogs.map((blog) => (
-        <BlogCard key={blog.frontmatter.slug} {...blog} />
+        <BlogCard key={blog.slug} {...blog} />
       ))}
     </Layout>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const blogs = await getAllBlogs();
+  const blogs = await getAllBlogsFrontmatter();
   return { props: { blogs } };
 };
 

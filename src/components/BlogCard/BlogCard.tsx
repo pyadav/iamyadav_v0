@@ -1,18 +1,16 @@
-import { Blog } from "types/blog";
+import { Blog, Frontmatter } from "types/blog";
 import Link from "next/link";
 
 export const BlogCard = ({
-  frontmatter: {
-    slug,
-    title,
-    subtitle,
-    description,
-    publishedAt,
-    updatedAt,
-    excerpt,
-    readingTime,
-  },
-}: Blog) => {
+  slug,
+  title,
+  subtitle,
+  description,
+  publishedAt,
+  updatedAt,
+  excerpt,
+  readingTime,
+}: Frontmatter) => {
   return (
     <article key={slug}>
       <header className="mb-2">
