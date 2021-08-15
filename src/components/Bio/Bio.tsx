@@ -11,13 +11,13 @@ export function Bio({ className }: any) {
         <Image
           alt="my avatar"
           className="rounded-full"
-          src="/static/profile.jpeg"
+          src="/static/profile.png"
           width={70}
           height={70}
           quality={100}
           priority={true}
           placeholder="blur"
-          blurDataURL="/static/profile.jpeg"
+          blurDataURL="/static/profile.png"
         />
       </div>
 

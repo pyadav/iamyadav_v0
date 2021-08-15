@@ -43,7 +43,7 @@ const sortByDate = (a, b) => {
         "Hi I'm Praveen Yadav, a versatile javascript & golang developer and this is my blog. Here, I share my own experience as a developer and everything I'm learning about Golang, Typescript, React, testing and life",
       site_url: "https://iamyadav.com",
       feed_url: "https://iamyadav.com/rss.xml",
-      image_url: "https://iamyadav.com/static/profile.jpeg",
+      image_url: "https://iamyadav.com/static/profile.png",
       language: "en",
     });
 
