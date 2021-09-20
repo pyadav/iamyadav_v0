@@ -94,8 +94,8 @@ export default function BlogPage({
               <Image
                 alt="blog header"
                 src={frontmatter.ogImage}
-                width={1920}
-                height={900}
+                width={1200}
+                height={628}
                 quality={100}
                 priority={true}
                 placeholder="blur"
