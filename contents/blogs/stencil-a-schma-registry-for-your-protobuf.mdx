@@ -1,0 +1,66 @@
+---
+title: Stencil - A Protobuf schema registry JAM 🍺
+description: Recently we had a JAM 🍺 session at GOJEK to build dependency graph of a proto file descriptor in stencil. Stencil is a Protobuf schema registry that enables you to create, maintain and consume protobuf messages and APIs dynamically, efficiently, and reliably.
+locale: en
+isPublished: false
+publishedAt: "2021-09-20"
+updatedAt: "2021-09-20"
+ogImage: "/assets/stencil-jam.svg"
+toc: true
+tags:
+  - stencil
+  - protobuf
+---
+
+Recently we had a JAM 🍺 session at GOJEK organised by [ODPF](https://github.com/odpf) (Open Data Platform community) for stencil, A Protobuf schema registry. Usually, we organise these JAM sessions every month for two days a week.
+
+In a JAM session, Everyone is free to pitch any idea which they are in love with or pick any existing issue as a starting point. Also you are free to pair with anyone with their idea if you don't have one.
+
+This time, I was pairing with one of my colleague [Riteek Srivastav](https://www.linkedin.com/in/riteek-srivastav) on a idea of
+
+> Displaying dependency graph of a proto file descriptor
+
+We will go through how this feature will help us to understand proto files but before that let's understand what is stencil and why it's needed in the first place.
+
+## What is Stencil?
+
+[Stencil](https://github.com/odpf/stencil), is a dynamic Protobuf schema registry which helps you to work with your proto schema definitions at runtime.
+
+![image](/assets/stencil.svg)
+
+## Why do we need services like Stencil?
+
+In order to work with [Protobuf](https://developers.google.com/protocol-buffers) (a Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data), you need to generate source code for each change in proto definitions. By doing this, you will feel the pain of updating the dependencies version of all dependent services/packages. It's totally fine at a small scale but at the scale of GOJEK, it's really hard to maintain and update dependencies of proto.
+
+To reduce the pain and effort, We want to support services, load their proto schema definition at runtime.
+
+Protobuf allows you to define your whole proto file using FileDescriptorSet (as defined in [google/protobuf/descriptor.proto](https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/descriptor.proto)) which contains list of FileDescriptorProtos. **_FileDescriptorProtos_** is used to represent each relevant **_proto_** file. Now, you can use this **_FileDescriptorSet_** on the client at runtime.
+
+## Dependency graph of a proto file descriptor? 🤔
+
+In order to make changes in any proto file we need to understand what the file depends on. Figuring out a list of dependencies is hard for proto files due to recursive nature.
+
+So, We build a cli tool to generate dependency graph of a proto file descriptor
+
+```bash
+stencil graph --host="stencilhost" --namespace="proto" --name="descriptor" --version="latest"
+```
+
+which result into a **_.dot_** file. It can be used to visualize via **graphviz** tools by generating .svg and/or .png images.
+
+```js
+dot -Tpng proto_vis.dot -o outfile.png
+OR
+dot -Tsvg proto_vis.dot -o outfile.svg
+```
+
+You can also use **[WebGraphviz](http://www.webgraphviz.com/)** to view your .dot file in the Browser
+![image](/assets/proto-viz.png)
+
+This is a dependency graph generated for Optimus protos from [proton](https://github.com/odpf/proton).
+
+## Conclusion
+
+It was fun to be part of the JAM session. I learned a lot about [stencil](https://github.com/odpf/stencil), [Protobuf](https://developers.google.com/protocol-buffers) and it's runtime use cases.
+
+If you are interested to use/contribute to any of our services then you can join the [ODPF](https://odpf-community.slack.com/) community slack channel to ask any questions. Also if you have any questions or suggestions, feel free to add a comment or contact me on [twitter](https://twitter.com/osfreak).

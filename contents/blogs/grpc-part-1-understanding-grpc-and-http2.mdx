@@ -1,0 +1,170 @@
+---
+title: "GRPC - Part 1: Understanding gRPC and HTTP/2"
+description: Two separate applications need an intermediary to communicate with each other. gRPC, a primary models for API design is modern, high performance framework for building large-scale, distributed applications over remote procedure call (RPC) protocols. It uses HTTP/2 for transport and Protocol Buffers as the interface description language
+isPublished: false
+publishedAt: "2021-09-01"
+updatedAt: "2021-09-01"
+ogImage: "/assets/grpc.svg"
+toc: true
+tags:
+  - API
+  - RPC
+  - gRPC
+---
+
+Two separate applications need an intermediary to communicate with each other. So we build bridges - API([Application Programming Interface](https://en.wikipedia.org/wiki/API)) to allows them to communicate, access information, and perform actions. Over time, different API architectural styles emerged. Each of them has its own patterns of standardizing how data exchange will happen and which wire format or protocol will be used. Untill recently, **JSON over REST** was de-facto standard for APIs.
+
+**REST architectural style** defines a set of high level design guidelines to be used for creating loosely coupled applications using **HTTP protocol** for data transmission. REST architecture allows API providers to deliver data in multiple formats, **JSON** is currently the preferred one.
+
+Here is cronological order of different API architectural styles released:
+![API Timeline](/assets/api-timeline.svg "API Timeline")
+In this artical, we will be dicussing about: gRPC, a new primary models for API design.
+
+## gRPC
+
+gRPC is modern, high performance RPC framework for building large-scale, distributed applications over RPC ([remote procedure call](https://en.wikipedia.org/wiki/Remote_procedure_call)) protocols. It uses **HTTP/2 protocol for transport and Protocol Buffers as both its [interface description language](https://en.wikipedia.org/wiki/Interface_description_language) and its undelying message format**.
+
+In gRPC a client application can directly call methods on a server application on a different machine as if it were a local object, making it easier to create distributed applications and services.
+
+Before we rush into gRPC, we should take a look at what Remote Procedure Calls (RPCs) are.
+
+## what is Remote Procedure Call (RPC)?
+
+RPC is an inter-process communication ([IPC](https://en.wikipedia.org/wiki/Inter-process_communication)) architecture to facilitate easy communication, one of many ways to communicate between two processes. The two processes may be on the same system, or they may be on different systems with a network connecting them. In this case, the processes are the client and the server. The client sends a request message to a known remote server to execute a specified procedure with supplied parameters, which then sends a response back to the client.
+
+> A procedure is a collection of instructions in a program to perform a specific task
+
+When a procedure is invoked on same machine, it is called a local procedure call. When a procedure is executed remotely on a remote machine, it is called a remote procedure call. **We can execute a remote procedure using any type of network connection like HTTP, WebSocket, AMQP, etc.**
+
+RPC is also a request-response protocol. The client sends a request to the server to perform some operation, and the server responds with a response. RPC server can be a stand alone or use an exitting HTTP server to communicate with clients.
+
+In RPC framework, We do register a procedure with a server, making it visible as a service with the name of same as procedure name and the server will execute the procedure when a request comes in.
+
+## RPC life cycle
+
+![RPC](/assets/rpc.svg "RPC")
+
+- The client invokes the client [stub](<https://en.wikipedia.org/wiki/Stub_(distributed_computing)>) using local procedure call, with parameters.
+- The client stub packs the parameters([marshalling](<https://en.wikipedia.org/wiki/Marshalling_(computer_science)>)) into a message and makes a system call to send the message.
+- The client's local operating system sends the message from the client machine to the server machine.
+- The local operating system on the server machine passes the incoming packets to the server stub.
+- The server stub unpacks the parameters([unmarshalling](https://en.wikipedia.org/wiki/Unmarshalling)) from the message.
+- Finally, the server stub calls the server procedure and send response back to the client
+
+## gRPC core concepts
+
+gRPC uses HTTP/2 for its transport protocol. gRPC is lightweight and highly performant. It can be up to 8x faster than JSON serialization with messages 60-80% smaller
+
+gRPC is well suited to the following scenarios:
+
+- **Microservices**
+  gRPC is designed for low latency and high throughput communication
+- **For real-time communication**
+  gRPC has excellent support for bi-directional streaming which can push messages in real time without polling
+- **Polyglot environments**
+  gRPC has multi-language environments supports.
+- **Network constrained environments**
+  gRPC messages are serialized with Protobuf, a lightweight message format which makes gRPC message smaller than an equivalent JSON message.
+
+let explore some of the features of HTTP/2 and concepts which makes gRPC better then REST.
+
+### HTTP/2
+
+HTTP/2 is one of the big reasons why gRPC can perform so well. HTTP/2 is not exclusive to gRPC. Many request types, including HTTP APIs with JSON, can use HTTP/2 and benefit from its performance improvements.
+
+HTTP/2 reduce latency by enabling full request and response [multiplexing](https://en.wikipedia.org/wiki/Multiplexing) using binary framing layer for data transport - unlike HTTP 1.1 which is text based, minimize protocol overhead via efficient compression of HTTP header fields, and server push. It also allows prioritization of requests, letting more important requests complete more quickly.
+![RPC](/assets/binary-framing-layer.svg "RPC")
+
+In HTTP/1.0, only one request was allowed on a single TCP connection. In HTTP/1.1, [HTTP pipelining](https://developer.mozilla.org/en-US/docs/Web/HTTP/Connection_management_in_HTTP_1.x#http_pipelining) allows multiple HTTP requests to be sent over a single TCP (transmission control protocol) connection without waiting for the corresponding responses multiple requests could be sent at the same time but its still suffer [head-of-line blocking](https://en.wikipedia.org/wiki/Head-of-line_blocking).
+
+In HTTP/2, all of HTTP/1.1's high-level semantics, such as [methods](https://en.wikipedia.org/wiki/HTTP_method), [status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes), [header fields](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields), and [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) are same as in HTTP/1.1. The only difference is that HTTP/2 uses a binary framing layer to multiplex multiple requests over a single TCP connection.
+
+![HTTP pipelining](/assets/HTTP_pipelining.svg "HTTP pipelining")
+
+These are some of the reasons why HTTP/2 is better than HTTP 1.1.
+
+- **Request and response multiplexing**
+  HTTP/2 layer called binary framing, encapsulates and encodes the data. Also, HTTP request/response gets broken down into frames - Header frames & data frames for sending data with multiple parallel requests over a single TCP connection
+- **Header Compression**
+  Everything in HTTP/2 is compressed using a fixed **Huffman code-based header compression algorithm** (HPACK). This is a header compression algorithm that is used to reduce the size of the headers that reduces network usage.
+- Bidirectional full-duplex communication for sending both client requests and server responses simultaneously.
+- Built-in streaming enables requests and responses to asynchronously stream large data sets.
+- **HTTP/2 Server Push** Ability of the server to send multiple responses for a single client request
+
+### Protocol Buffer
+
+Protocol Buffer provide a highly efficient language-neutral, platform-neutral, extensible mechanism for serializing structured data. Using the proto file, the Protobuf compiler, protoc, generates both client and service code for your target platform.
+
+A schema for protocol buffers associates data types with field names, using integers to identify each field which provides some bandwidth/storage savings compared with systems that include the field names in the data.
+
+```protobuf
+//person.proto
+message Person {
+  required string name = 1;
+  required int32 id = 2;
+  optional string email = 3;
+}
+```
+
+### Streaming
+
+Streaming is one of the core concepts of gRPC where several things can happen in a single request. This is made possible by the multiplexing capability of HTTP/2 mentioned earlier.
+
+A gRPC service supports several types of streaming:
+
+- Unary (no streaming)
+- Server Streaming RPC
+  Where the client sends a single request and the server can send back multiple responses
+- Client Streaming RPC
+  Where the client sends multiple requests and the server only sends back a single response.
+- Bi-directional streaming
+  Where both the client and server send messages to each other at the same time without waiting for a response.
+
+### Interceptors
+
+gRPC supports the usage of interceptors for its request/response.
+Interceptors are usually used to:
+
+- Modify the request/response before being passed on. It can be used to provide mandatory information before being sent to the client/server.
+- Allow you to manipulate each function call such as adding additional logging to track response time.
+
+### Load Balancing
+
+If you aren't already familiar with load balancing, it's a mechanism that allows client requests to be spread out across multiple servers.
+
+But load balancing is usually done at the proxy level (for example, NGINX). So why am I talking about it here?
+
+Turns out that gRPC supports a method of load balancing by the client. It's already implemented in the Golang library, and can be used with ease.
+
+### Deadline/timeouts and cancellation
+
+gRPC clients are able to specify how long they are willing to wait for an RPC to complete before the RPC is terminated with the error or when it doesn't need a response anymore. The [deadline](https://grpc.io/blog/deadlines/) is sent to the server, and the server can decide what action to take if it exceeds the deadline
+
+## Why we should choose gRPC over REST
+
+gRPC is faster than REST in all cases except when the payload is small and several clients makes a server call at the same time.
+
+Compared to REST APIs, gRPC APIs are better in the following ways:
+
+- Protobuf Instead of JSON
+  gRPC messages are serialized using Protobuf, an efficient binary message format. This makes payloads faster, smaller and simpler.
+- Built on HTTP 2 Instead of HTTP 1.1
+  gRPC uses HTTP/2 to support highly performant and scalable API’s and makes use of binary data rather than just text which makes the communication more compact and more efficient.
+- Code Generation Instead of Using Third-Party Tools Like Swagger
+- 7 to 10 times Faster Message Transmission
+
+## Conclusion
+
+I hope this article will help you to understand difference between REST and gRPC.
+
+If you have found this useful, please consider recommending and sharing it with other fellow developers and if you have any questions or suggestions, feel free to add a comment or contact me on [twitter](https://twitter.com/osfreak).
+
+## Refrences
+
+- [HTTP Documentation](https://httpwg.org/specs/)
+- [Hypertext Transfer Protocol version 2](https://httpwg.org/specs/rfc7540.html)
+- [Introduction to gRPC](https://grpc.io/docs/what-is-grpc/introduction/)
+- [Introduction to HTTP/2](https://developers.google.com/web/fundamentals/performance/http2)
+- [What is HTTP/2 – The Ultimate Guide](https://kinsta.com/learn/what-is-http2/)
+- [gRPC specification](https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md)
+- [Compare gRPC services with HTTP APIs](https://docs.microsoft.com/en-us/aspnet/core/grpc/comparison)
