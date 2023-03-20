@@ -16,7 +16,7 @@ export default async function handler(req: NextRequest) {
 
   const fontData = await font;
   const paint = mode === "dark" ? "#fff" : "#000";
-  const fontSize = title.length > 100 ? "70px" : "100px";
+  const fontSize = title.length > 100 ? "70px" : "84px";
 
   return new ImageResponse(
     (
@@ -32,7 +32,7 @@ export default async function handler(req: NextRequest) {
       >
         <div tw="flex flex-col flex-1 py-10 justify-center">
           <div
-            tw="flex leading-[1.1] text-[80px] font-bold tracking-tighter"
+            tw="flex font-bold tracking-tighter"
             style={{
               fontFamily: "Inter",
               fontWeight: "bolder",

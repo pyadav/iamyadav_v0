@@ -1,0 +1,128 @@
+---
+title: A Guide to Embedding Static Files in Go using go:embed
+description: "In this blog post, you will learn how to simplify the deployment and distribution of Go programs by embedding static files 
+directly in their code using go:embed, a new directive introduced in Go 1.16.
+
+This post covers the basic syntax of the directive, its limitations, and best practices for using it effectively. 
+By the end of this post, you will have a solid understanding of how to leverage go:embed to streamline your Go programs and 
+improve your deployment process." 
+isPublished: true
+publishedAt: "2023-03-21"
+toc: true
+tags:
+  - cli
+  - golang
+---
+
+Do you find it cumbersome to deal with separate files for static assets in your Go programs? 
+Are you looking to simplify the deployment and distribution of your Go programs? 
+If yes, then you are in luck! This blog post explores how to use go:embed to embed static files in Go binaries.
+
+If you are interested in accessing the code for this project, you can refer to my [GitHub repository](https://github.com/pyadav/a-guide-to-embedding-static-files-in-go).
+
+## The //go:embed Directive
+The //go:embed directive is a new feature introduced in Go 1.16 that enables developers to embed static files directly into the Go binary, 
+making it easier to include files like HTML, CSS, JavaScript, and images in Go applications. 
+The directive specifies a list of file paths or glob patterns that should be embedded in the binary. 
+
+For example, to embed files from build folder, we can use the following code:
+```go
+package main
+
+import (
+    "embed"
+)
+
+//go:embed dist/*
+var assets []byte
+
+func main() {
+    // Use assets as needed...
+}
+```
+
+The go:embed directive provides two options for specifying files to embed: `go:embed all:folder` and `go:embed pattern`. 
+Let's explore the differences between these two options:
+
+### go:embed all:folder
+The go:embed all:folder syntax embeds all files in a directory and its subdirectories. 
+All files, including those beginning with "." or "_", will be embedded in the specified variable. For example:
+``` go
+//go:embed all:static
+var staticAssets embed.FS
+```
+
+### go:embed pattern
+The go:embed pattern syntax embeds a specific set of files that match a certain pattern. 
+We can use wildcards and other patterns to specify more complex sets of files to embed. For example:
+```go
+//go:embed *.png
+var imageFiles embed.FS
+```
+
+In summary, the `go:embed` directive provides two options for specifying files to embed: `go:embed all:folder` and `go:embed pattern`. 
+The former is used to embed all files in a directory and its subdirectories, while the latter is used to embed a specific set of files 
+that match a certain pattern.
+
+## Create and embedding a react application with vite
+This section outlines how to create and embed a React TypeScript application using go:embed in Go.
+```JavaScript
+npm create vite@latest
+```
+
+1. create a react application by following [Scaffolding Your First Vite Project
+](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) tutorial.
+
+2. Create a go package file `embed.go` within UI folder
+
+``` go
+package ui
+
+import (
+	"embed"
+	"io/fs"
+)
+
+//go:embed all:dist
+var assets embed.FS
+
+func Assets() (fs.FS, error) {
+	return fs.Sub(assets, "dist")
+}
+```
+
+3. Import `embed.go` file in main to serve static assets
+
+```go
+assets, _ := ui.Assets()
+
+// Use the file system to serve static files
+fs := http.FileServer(http.FS(assets))
+http.Handle("/", http.StripPrefix("/", fs))
+```
+
+What we're doing here, is creating a route `/` and serving the static files built by Vite. Checkout [GitHub repository](https://github.com/pyadav/a-guide-to-embedding-static-files-in-go) 
+for full implementation
+
+## Limitations of go:embed
+While go:embed is a powerful feature that can simplify the deployment of Go programs, 
+it has some limitations that you should be aware of. The limitations include:
+
+1. The go:embed directive does not support dynamic file paths. The file paths must be known at compile time.
+
+2. The go:embed directive only works with files that are accessible from the current working directory or a subdirectory of it.
+This means that you cannot use the go:embed directive to embed files outside of your project directory or in a parent directory. such as such as `.git/*` or `symbolic links`.
+
+3. The go:embed directive must not match files whose names include the special punctuation characters **" * < > ? ` ' | / \ and :**
+
+## Reference
+1. Embed package [RFC](https://pkg.go.dev/embed)
+2. Go command support for embedded static assets [Draft Design](https://go.googlesource.com/proposal/+/master/design/draft-embed.md)
+3. [Proposal](https://github.com/golang/go/issues/35950) cmd/go: support embedding static assets (files) in binaries
+
+
+## Conclusion
+By leveraging go:embed, developers can simplify the deployment and distribution of Go programs by embedding static files directly into their code. 
+Although go:embed has some limitations, it is still a powerful feature that can streamline Go programs and improve the deployment process.
+
+If you have any questions or suggestions, feel free to add a comment or contact me on [twitter](https://twitter.com/osfreak).
