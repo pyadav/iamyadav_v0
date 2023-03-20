@@ -15,7 +15,8 @@ const Hero = () => {
       });
       return response.json();
     };
-    getAllBlogViews().then((data) => {
+    getAllBlogViews().then((data = []) => {
+      data = Array.isArray(data) ? data : [];
       const count = data.reduce(
         (acc: number, curr: any) => acc + Number(curr.count),
         0

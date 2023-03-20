@@ -1,4 +1,5 @@
 import { Head, Html, Main, NextScript } from "next/document";
+import { GA } from "~/components/ga";
 
 export default function Document() {
   return (
@@ -10,20 +11,7 @@ export default function Document() {
           href="https://unpkg.com/prism-theme-night-owl@1.4.0/build/style.css"
           rel="stylesheet"
         />
-        <script
-          async
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${process.env.NEXT_PUBLIC_GA_TRACKING_ID}');
-              `,
-          }}
-        />
+        {process.env.NODE_ENV === "production" && <GA />}
       </Head>
       <body>
         <Main />
