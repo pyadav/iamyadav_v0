@@ -1,0 +1,138 @@
+---
+title: How to Authenticate CLI Using OAuth
+description: "Are you building a CLI that needs to authenticate using OAuth? If so, you'll need to require permission for your access token using OAuth flow. 
+In this article, we'll walk through the process of authenticating a CLI using OAuth and GitHub." 
+isPublished: true
+publishedAt: "2023-03-17"
+toc: true
+tags:
+  - cli
+  - OAuth
+  - golang
+---
+
+Are you building a CLI that needs to authenticate using OAuth? 
+
+If so, you'll need to require permission for your access token using OAuth flow. 
+In this article, we'll walk through the process of authenticating a CLI using OAuth and GitHub.
+
+If you are interested in accessing the code for this project, you can refer to my [GitHub repository](https://github.com/pyadav/how-to-authenticate-cli-using-oauth).
+
+## What is OAuth 2.0
+OAuth 2.0 is an open-standard authorization protocol that allows third-party applications to access user data without compromising credentials. 
+It works by delegating user authentication to the service that hosts the user account and authorization for the application to access the user's data.
+
+GitHub provides OAuth2-based authentication, which requires a client ID and secret to authenticate the client. Once authenticated, the client can request 
+an access token, which can then be used to make authenticated requests to the GitHub API.
+
+## Setting up Github
+
+To use APIs with a GitHub account, you need to go to the GitHub developer settings page and create a new GitHub application. 
+Navigate to "Settings" -> "[Developer settings](https://github.com/settings/apps)" -> "OAuth Apps" and click "New OAuth App". 
+
+Fill out the required information, including the callback URL, which is the URL where the user will be redirected after authorizing the application.
+
+## Authenticating a CLI with Github in Golang
+```go
+package main
+import (
+    "golang.org/x/oauth2"
+    "golang.org/x/oauth2/github"
+)
+
+func main() {
+	config := &oauth2.Config{
+		ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+		ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+		Scopes:       []string{"read:org", "read:user", "read:project", "public_repo", "gist"},
+		Endpoint:     github.Endpoint,
+		RedirectURL:  "http://localhost:9999/oauth/callback",
+	}
+	// ...
+}
+```
+To handle OAuth authentication, we'll be using the `golang.org/x/oauth2` package. The ClientID and ClientSecret fields 
+in the oauth2.Config struct should be replaced with your own GitHub credentials.
+
+
+```go
+	// start server
+	ctx := context.Background()
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	sslcli := &http.Client{Transport: tr}
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, sslcli)
+
+	server := &http.Server{Addr: ":9999"}
+
+	// create a channel to receive the authorization code
+	codeChan := make(chan string)
+
+	http.HandleFunc("/oauth/callback", handelOauthCallback(ctx, config, codeChan))
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	}()
+
+	// get the OAuth authorization URL
+	url := config.AuthCodeURL("state", oauth2.AccessTypeOffline)
+
+	// Redirect user to consent page to ask for permission
+	// for the scopes specified above
+	fmt.Printf("Your browser has been opened to visit::\n%s\n", url)
+
+	// open user's browser to login page
+	if err := browser.OpenURL(url); err != nil {
+		panic(fmt.Errorf("failed to open browser for authentication %s", err.Error()))
+	}
+
+	// wait for the authorization code to be received
+	code := <-codeChan
+
+	// exchange the authorization code for an access token
+	token, err := config.Exchange(context.Background(), code)
+	if err != nil {
+		log.Fatalf("Failed to exchange authorization code for token: %v", err)
+	}
+
+	if !token.Valid() {
+		log.Fatalf("Cann't get source information without accessToken: %v", err)
+		return
+	}
+
+	// write the access token to a file
+	if err := writeTokenToFile(token); err != nil {
+		log.Fatalf("Failed to write token to file: %v", err)
+	}
+
+	// shut down the HTTP server
+	if err := server.Shutdown(context.Background()); err != nil {
+		log.Fatalf("Failed to shut down server: %v", err)
+	}
+
+	log.Println(color.CyanString("Authentication successful"))
+```
+
+ 
+Here's how the authentication flow works:
+1. The program starts the server and launches the user's browser application for granting permission to authorize the program to access Github resources.
+2. Once the user grants permission, the authorization server redirects the request to the predefined redirect URL.
+3. The client program parses the redirect request and receives the authorization code.
+4. The client uses this authorization code to exchange for an access token by calling the authorization server endpoint.
+5. The program saves this token to a file named `token.json` with 0600 permissions
+6. Now you can make API requests using cli on behalf of the user.
+
+NOTE: If you need to use a different scope, you will need to modify the Scopes field in the oauth2.Config struct accordingly.
+
+## Reference
+1. The OAuth 2.0 Authorization Framework [RFC](https://www.rfc-editor.org/rfc/rfc6749#section-1.3.1)
+
+## Conclusion
+
+In conclusion, OAuth 2.0 is a secure and convenient way to authenticate command-line applications using Github. 
+By following the steps outlined in this post, you can easily authenticate your CLI using Github in Golang.
+
+If you have any questions or suggestions, feel free to add a comment or contact me on [twitter](https://twitter.com/osfreak).
