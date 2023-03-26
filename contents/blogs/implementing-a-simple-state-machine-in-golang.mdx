@@ -1,0 +1,179 @@
+---
+title: Implementing a simple state machine in Golang
+description: "In this blog post, we explore the concept of state machines and their benefits in computer science. 
+We provide an overview of how state machines work and how they can be implemented in Go. By using state machines, 
+developers can write more organized, error-resistant code and improve the clarity and structure of their systems."
+isPublished: true
+publishedAt: "2023-03-26"
+toc: true
+tags:
+  - state-machine
+  - golang
+---
+
+State machines are a powerful concept in computer science, allowing you to model complex systems as a series of simple states and transitions 
+between them. By breaking down the behaviour of a system into smaller, more manageable states, you can write more organized, error-resistant code. 
+In this post, we'll show you how to build a simple state machine in Go, providing a clear and structured way of describing and organizing the 
+behaviour of your system.
+
+**While this implementation is not recommended for use in production environments**, you'll get a better understanding of 
+how state machines work and how they can be implemented in your own code.
+
+If you are interested in accessing the code for this project, you can refer to my [GitHub repository](https://github.com/pyadav/implementing-a-simple-state-machine-in-golang).
+
+
+## A state machine
+> A state machine is a mathematical model that describes the behaviour of a system based on a set of states and the transitions between those states. 
+In other words, it's a way to represent complex systems as a series of simple states and transitions between them.
+
+## How state machines work
+A state machine consists of a set of states, a set of transitions, and a set of events or conditions that trigger those transitions. 
+Each state represents a particular condition or mode of operation for the system, and transitions represent the changes that occur when the system moves from one state to another.
+**For example**, 
+![](/assets/traffic_light.svg)
+let's consider a simple traffic light system. 
+
+1. A traffic light system has three states: red, yellow, and green, which correspond to the different colors of the traffic light.
+2. Transitions between these states are triggered by events, such as a timer or a sensor that detects the presence of a car at an intersection.
+3. When the traffic light is in the red state, it means that traffic must stop.
+4. When the event is triggered, the traffic light transitions to the yellow state, indicating that the light is about to turn red.
+5. Finally, the light transitions to the green state, indicating that traffic can proceed.
+6. Each transition can have associated actions or behaviors that occur when the transition is triggered, such as a buzzer or flashing light to warn drivers that the light is about to change.
+
+
+In summary, state machines are a way to model the behaviour of a system or process by representing the system as a set of states and transitions 
+between those states, triggered by events or conditions. State machines are useful for modeling systems that exhibit discrete behaviour and 
+can help developers to better understand the behaviour of their software.
+
+## Implementing a state machine in Go
+
+### Creating a State interface
+To implement a state machine in Go, we'll start by creating a State interface that defines the methods that each state must implement. 
+Here the State interface having three methods, Enter, Exit, Update. Enter() is called when a state is entered, Exit() is called when a state is exited, 
+and Update() is called to update the state machine.
+
+```go
+type State interface {
+	Enter()
+	Exit()
+	Update(l *StateMachine)
+}
+```
+
+### Creating a StateMachine struct
+Next, we'll create a StateMachine struct that will represent the state machine to mantain states and transitions between them. 
+The StateMachine struct will have two fields, currentState and states. The currentState field will hold the current state of the state machine, and 
+the states field will hold all the possible states of the state machine.
+
+```go
+type StateMachine struct {
+    currentState State
+    states       map[string]State
+}
+
+func (sm *StateMachine) setState(s State) {
+	sm.currentState = s
+  sm.currentState.Enter()
+}
+
+func (sm *StateMachine) Transition() {
+	sm.currentState.Update(sm)
+}
+```
+
+### Implementing the State interface
+Each state in the state machine should implement the State interface, defining the behaviour for each event or condition that can trigger a transition.
+```go
+type RedLight struct{}
+
+func (g RedLight) Enter() {
+	fmt.Println("Red light is on. Stop driving.")
+	time.Sleep(time.Second * 5)
+}
+func (g RedLight) Exit() {}
+func (g RedLight) Update(l *StateMachine) {
+	l.setState(&GreenLight{})
+}
+
+type GreenLight struct{}
+
+func (g GreenLight) Enter() {
+	fmt.Println("Green light is on. You can drive.")
+	time.Sleep(time.Second * 5)
+}
+func (g GreenLight) Exit() {}
+func (g GreenLight) Update(l *StateMachine) {
+	l.setState(&YellowLight{})
+}
+
+type YellowLight struct{}
+
+func (g YellowLight) Enter() {
+	fmt.Println("Yellow light is on. Prepare to stop.")
+	time.Sleep(time.Second * 5)
+}
+func (g YellowLight) Exit() {}
+func (g YellowLight) Update(l *StateMachine) {
+	l.setState(&RedLight{})
+}
+
+```
+
+### Implementing the StateMachine struct
+The StateMachine struct should define the logic for transitioning between states based on the current state and the event or condition that triggers the transition.
+```go
+func NewStateMachine(initialState State) *StateMachine {
+	sm := &StateMachine{
+		currentState: initialState,
+		states:       make(map[string]State),
+	}
+
+  sm.currentState.Enter()
+  return sm
+}
+```
+
+
+
+### Example usage of the state machine in Go
+In the main function, we create a StateMachine instance with the RedLight state as the initial state. 
+We then call the Transition method in an infinite loop to simulate the traffic light changing states indefinitely.
+
+Note that this is a very simple example, and in a real-world traffic light implementation, 
+there would be many more states and transitions to handle.
+
+```go
+func main() {
+  sm := NewStateMachine(&RedLight{})
+
+	for {
+		sm.Transition()
+	}
+}
+```
+
+## Benefits of using state machines
+State machines promote modularity, making it easier to test, reuse, and swap out different parts of your system without affecting the entire system. 
+By reducing the complexity of your system, state machines can also help reduce errors and make it easier to identify and correct problems.
+
+### Improved clarity and structure
+State machines provide a clear and structured way of describing and organizing the behaviour of complex systems. 
+They allow developers to break down the behaviour into smaller, more manageable states and transitions, making it easier to understand, 
+maintain, and modify the system.
+
+### Modularity
+State machines promote modularity by separating the states and transitions from the rest of the system. 
+This makes it easier to test, reuse, and swap out different parts of the system without affecting the entire system.
+
+## Reference
+
+1. [xstate](https://xstate.js.org): JavaScript state machines
+2. [looplab/fsm](https://github.com/looplab/fsm): Finite State Machine for Go
+
+## Conclusion
+
+State machines are a useful tool for modeling the behaviour of a system or process, and can help you write more organized, error-resistant code. 
+By breaking down the behaviour of your system into smaller, more manageable states and transitions, 
+you can better understand the behaviour of your software and make it easier to test, debug, and modify.
+
+If you have found this useful, please consider recommending and sharing it with other fellow developers and if you have any questions or suggestions, feel free to contact me on [twitter](https://twitter.com/osfreak).
